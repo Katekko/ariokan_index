@@ -1,0 +1,10 @@
+# Code ownership for Ariokan Deck Portal
+# Lines matching file patterns map to GitHub handles.
+# Syntax: https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+* @Katekko
+
+# Future granular ownership examples (uncomment when multiple maintainers):
+# /memory/ @Katekko
+# /specs/ @Katekko
+# /app/lib/entities/ @Katekko

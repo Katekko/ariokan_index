@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Architecture Discussion
+    url: https://github.com/Katekko/ariokan_index/discussions
+    about: Use discussions for exploratory architectural ideas before filing an architecture change issue.
+  - name: General Q&A
+    url: https://github.com/Katekko/ariokan_index/discussions
+    about: Ask questions or seek clarification here.
