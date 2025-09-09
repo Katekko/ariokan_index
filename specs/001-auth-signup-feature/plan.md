@@ -125,7 +125,49 @@ ios/ or android/
 └── [platform-specific structure]
 ```
 
-**Structure Decision**: Use existing feature-sliced Flutter `app/lib` layout (Option 1 analogous). No new top-level projects required.
+**Structure Decision**: Adopt README-declared feature-sliced layout inside `/ariokan_index/lib/` using root folders: `app/`, `processes/`, `pages/`, `features/`, `entities/`, `shared/`. Current scaffold only has `main.dart`; directories will be added incrementally as tasks execute.
+
+### Structure Alignment (Auth Signup Scope)
+Planned additions for this feature (only what is required now):
+```
+ariokan_index/lib/
+   app/
+      app.dart                # Root MaterialApp wrapper (will host theme + router)
+      router.dart             # Route table including /signup
+      di/providers.dart       # Top-level providers (auth service, user repository)
+   pages/
+      auth_signup_page/
+         auth_signup_page.dart # Wires signup feature to route
+   features/
+      auth_signup/
+         ui/
+            signup_form.dart    # Stateful widget / bloc builder
+         model/
+            signup_state.dart   # Immutable state object
+         logic/
+            signup_controller.dart # Cubit handling validation + submission
+   entities/
+      user/
+         user.dart             # Domain model (id, username, email, createdAt)
+         user_repository.dart  # Interface + impl stub for createUserWithUsername
+   shared/
+      services/
+         auth_service.dart     # Thin wrapper over Firebase Auth (email/pass)
+      firebase/
+         firebase_init.dart    # Firebase initialization (lazy for tests)
+      utils/
+         result.dart           # Result type (if not existing yet)
+         validators.dart       # Username/email/password validators
+      constants/
+         limits.dart           # Password length bounds
+```
+
+Deferrals (not created in this feature unless required by tests): `processes/`, other feature folders, design system widgets.
+
+Rationale:
+- Minimize early directories to those directly used by auth signup tasks.
+- Keep repository contract under `entities/user` per constitution.
+- Shared validators & result reused later by login/deck features.
 
 ## Phase 0: Outline & Research
 1. **Extract unknowns from Technical Context** above:
