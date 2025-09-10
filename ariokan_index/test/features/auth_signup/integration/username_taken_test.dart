@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:ariokan_index/features/auth_signup/ui/signup_form.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ariokan_index/features/auth_signup/logic/signup_controller.dart';
 import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
 import 'package:ariokan_index/entities/user/user_repository.dart';
@@ -31,7 +32,12 @@ void main() {
     );
 
     await tester.pumpWidget(
-      localizedTestApp(SignupForm(controller: controller)),
+      localizedTestApp(
+        BlocProvider.value(
+          value: controller,
+          child: const SignupForm(),
+        ),
+      ),
     );
 
     await tester.enterText(find.byType(TextFormField).at(0), 'existing');
