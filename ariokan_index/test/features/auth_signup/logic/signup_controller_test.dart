@@ -48,6 +48,69 @@ void main() {
       expect(controller.state.status, SignupStatus.success);
     });
 
+    test('username taken error sets error state with code', () async {
+      controller
+        ..updateUsername('existing')
+        ..updateEmail('user@example.com')
+        ..updatePassword('secret123');
+      when(
+        () => mockRepo.createUserWithUsername(
+          username: any(named: 'username'),
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer(
+        (_) async => Failure(SignupError(SignupErrorCode.usernameTaken)),
+      );
+      await controller.submit();
+      expect(controller.state.status, SignupStatus.error);
+      expect(controller.state.error?.code, SignupErrorCode.usernameTaken);
+    });
+
+    test('rollback failure surfaces rollbackFailed code', () async {
+      controller
+        ..updateUsername('userx')
+        ..updateEmail('user@example.com')
+        ..updatePassword('secret123');
+      when(
+        () => mockRepo.createUserWithUsername(
+          username: any(named: 'username'),
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer(
+        (_) async => Failure(SignupError(SignupErrorCode.rollbackFailed)),
+      );
+      await controller.submit();
+      expect(controller.state.status, SignupStatus.error);
+      expect(controller.state.error?.code, SignupErrorCode.rollbackFailed);
+    });
+
+    test('full happy path sets success & user populated', () async {
+      controller
+        ..updateUsername('flowuser')
+        ..updateEmail('flow@example.com')
+        ..updatePassword('supersecret');
+      when(
+        () => mockRepo.createUserWithUsername(
+          username: any(named: 'username'),
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer(
+        (_) async => Success(
+          User(
+            id: 'u1',
+            username: 'flowuser',
+            email: 'flow@example.com',
+            createdAt: DateTime.utc(2025),
+          ),
+        ),
+      );
+      await controller.submit();
+      expect(controller.state.status, SignupStatus.success);
+    });
+
     test('double submit returns same future while submitting', () async {
       controller
         ..updateUsername('user')

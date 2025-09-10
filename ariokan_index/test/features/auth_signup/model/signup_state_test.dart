@@ -11,7 +11,11 @@ void main() {
 
     test('copyWith updates fields immutably', () {
       final s1 = SignupState.initial();
-      final s2 = s1.copyWith(username: 'user', email: 'user@example.com', password: 'secret123');
+      final s2 = s1.copyWith(
+        username: 'user',
+        email: 'user@example.com',
+        password: 'secret123',
+      );
       expect(s1, isNot(equals(s2)));
       expect(s2.username, 'user');
       expect(s2.email, 'user@example.com');
@@ -20,7 +24,11 @@ void main() {
 
     test('transition to submitting then success', () {
       final s = SignupState.initial()
-          .copyWith(username: 'user', email: 'user@example.com', password: 'secret123')
+          .copyWith(
+            username: 'user',
+            email: 'user@example.com',
+            password: 'secret123',
+          )
           .copyWith(status: SignupStatus.submitting)
           .copyWith(status: SignupStatus.success);
       expect(s.status, SignupStatus.success);
@@ -29,7 +37,10 @@ void main() {
 
     test('error state carries error', () {
       final err = SignupError(SignupErrorCode.usernameTaken, message: 'taken');
-      final s = SignupState.initial().copyWith(status: SignupStatus.error, error: err);
+      final s = SignupState.initial().copyWith(
+        status: SignupStatus.error,
+        error: err,
+      );
       expect(s.status, SignupStatus.error);
       expect(s.error, isNotNull);
       expect(s.error!.code, SignupErrorCode.usernameTaken);
