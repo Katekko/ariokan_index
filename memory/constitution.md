@@ -138,9 +138,10 @@ Non-compliant contributions are refactored prior to merge; exceptions are tempor
 
 ## Versioning & Metadata
 
-**Version**: 0.1.2 | **Ratified**: 2025-09-09 | **Last Amended**: 2025-09-10
+**Version**: 0.1.3 | **Ratified**: 2025-09-09 | **Last Amended**: 2025-09-10
 
 Change Log:
+- 0.1.3: Clarified feature-owned page widgets (synchronized README skeleton); added requirement to update README feature list upon merge of new slice.
 - 0.1.2: Removed standalone `pages/` layer; feature-local page pattern adopted.
 - 0.1.1: Added Section K (Code Style & Linting) and mandated constructor-first ordering lint.
 - 0.1.0: Initial establishment of core architectural, workflow, and quality principles for MVP.

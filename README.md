@@ -12,10 +12,9 @@ Architecture Style: Feature-Sliced Design (adapted for Flutter Web + Firebase)
 From outer (more concrete) to inner (more abstract):
 1. app (composition root, routing, global providers)
 2. processes (multi-step flows spanning multiple features, e.g., deck_publish_flow)
-3. pages (route-level widgets binding features)
-4. features (user-facing atomic capabilities: create_deck, edit_deck_tags, list_decks, view_deck, auth_login, auth_signup)
-5. entities (core domain models + small domain logic: deck, tag, version, user)
-6. shared (reusable primitives: ui kit, theming, utils, firebase adapters, config)
+3. features (user-facing atomic capabilities: create_deck, edit_deck_tags, list_decks, view_deck, auth_login, auth_signup; each owns its page widget)
+4. entities (core domain models + small domain logic: deck, tag, version, user)
+5. shared (reusable primitives: ui kit, theming, utils, firebase adapters, config)
 
 (If a layer is not needed initially it can be omitted until first use.)
 
@@ -31,19 +30,7 @@ app/
     processes/          # Orchestrated flows
       deck_publish_flow/
         deck_publish_flow.dart
-    pages/              # Route-level widgets mapping to URL paths
-      deck_publish_page/
-        deck_publish_page.dart
-      deck_detail_page/
-        deck_detail_page.dart
-      deck_list_page/
-        deck_list_page.dart
-      profile_page/
-        profile_page.dart
-      auth_login_page/
-        auth_login_page.dart
-      auth_signup_page/
-        auth_signup_page.dart
+  // Pages removed; each feature exposes its own page widget under features/<feature>/ui/
     features/
       create_deck/
         ui/
@@ -115,9 +102,9 @@ app/
 
 ## Dependency Rules
 Higher layer can depend on same or inner layers only.
-- pages -> features, entities, shared
-- features -> entities, shared
+- app -> (processes, features, entities, shared)
 - processes -> features, entities, shared
+- features -> entities, shared
 - entities -> shared (avoid upward references)
 - shared -> (no dependencies on other slices; only platform & packages)
 
@@ -200,5 +187,99 @@ try {
 
 Avoid logging secrets (passwords, tokens, PII). Sanitize values first.
 
+### AppLogger Usage Patterns
+```dart
+// Initialization (already invoked in main.dart)
+await AppLogger.init();
+
+// Info with context key-value pairs (serialize lightweight primitives only)
+AppLogger.info('SignupController', 'submit_start', fields: {
+  'username': usernameMasked(username), // never raw if sensitive
+});
+
+// Warning (non-fatal unexpected state)
+AppLogger.warn('UserRepository', 'username_collision_retry');
+
+// Error with exception + stack
+try {
+  await _repo.createUserWithUsername(...);
+} catch (e, s) {
+  AppLogger.error('UserRepository', 'create_failed', error: e, stack: s, fields: {
+    'phase': 'firestore_batch',
+  });
+  rethrow; // still propagate if caller needs to handle
+}
+
+// Helper masking example (pseudo)
+String usernameMasked(String raw) => raw.length <= 2
+    ? '**'
+    : raw.substring(0, 2) + ('*' * (raw.length - 2));
+```
+
+Guidelines:
+- Use stable event identifiers (e.g., submit_start, create_failed) for future log aggregation.
+- Prefer one log per significant user intent phase (start, success, failure).
+- Do not log full email or password; mask or omit.
+
+
 ## License
 TBD.
+
+## Current Implemented Features (MVP Progress)
+
+### Auth Signup (Feature 001)
+Status: Initial implementation merged on branch `001-auth-signup-feature`.
+
+Capability: Allows unauthenticated visitor to create an account with unique immutable username (regex ^[a-z0-9_]{3,20}$), email, and password (6-128 chars). Performs client-side validation and repository-mediated submission.
+
+Key Components:
+- `features/auth_signup/ui/signup_page.dart`: Page scaffold & success redirect to `/decks`.
+- `features/auth_signup/ui/signup_form.dart`: Form fields + validation + error mapping.
+- `features/auth_signup/logic/signup_controller.dart`: Cubit controlling state machine (idle → submitting → success|error) and guards against double submission.
+- `features/auth_signup/model/signup_state.dart`: Immutable state + error codes.
+- `entities/user/user.dart`: User entity (id, username, email, createdAt).
+- `entities/user/user_repository.dart`: Abstract repository ensuring atomic username + user profile creation (implementation stubbed / to be completed with Firebase integration).
+- `shared/utils/validators.dart`: Username/email/password validation helpers (regex + length bounds).
+- `shared/utils/result.dart`: Lightweight Result type (success/failure) enabling error mapping without exceptions.
+
+User Flow (Happy Path):
+1. User enters valid values → submit.
+2. Controller performs sync validation; on success invokes repository.
+3. Repository (future impl) creates auth user + Firestore docs atomically.
+4. State transitions to success → page redirects to `/decks`.
+
+Failure Modes & Handling:
+- Invalid fields → immediate `SignupStatus.error` with specific `SignupErrorCode`.
+- Network/unknown failure → `networkFailure` surfaced.
+- Username taken (repository-level) → `usernameTaken` error.
+
+Open Items / TODOs:
+- Concrete Firebase-backed `UserRepository` + `AuthService` implementation.
+- Tests (unit, widget, integration) outlined in `specs/001-auth-signup-feature/tasks.md` pending migration into test suite (some placeholders currently absent).
+- Redirect guard for already-authenticated users (FR-010) to be formalized in router middleware.
+
+Specification Artifacts:
+- `specs/001-auth-signup-feature/spec.md` (functional requirements & scenarios)
+- `specs/001-auth-signup-feature/tasks.md` (TDD task breakdown)
+- `specs/001-auth-signup-feature/quickstart.md` (manual validation steps)
+
+Traceability Matrix (Excerpt):
+- FR-001/002/007/015: Handled via validators + controller early checks.
+- FR-009: `_inFlight` guard in controller prevents double-submit.
+- FR-011: Logging pending integration with `AppLogger` (add in repository/controller on completion).
+- FR-016: Rollback semantics require concrete repository + auth service (NOT YET IMPLEMENTED).
+
+### Upcoming
+Next planned features: auth login, deck creation slice. Each will follow the same spec → tasks → implementation → README update workflow.
+
+## Contribution Workflow (Spec → Tasks → Branch)
+Standard steps for adding a new feature slice:
+1. Create spec under `specs/NNN-feature-slug/` using templates.
+2. Add `plan.md` + `tasks.md` describing TDD order.
+3. Branch: `NNN-feature-slug` (e.g., `002-auth-login-feature`).
+4. Write failing tests first.
+5. Implement minimal code to pass tests incrementally.
+6. Update READMEs with new slice summary.
+7. Open PR referencing spec & tasks; ensure constitution rules upheld.
+
+See `CONTRIBUTING.md` for detailed guidelines (lint, commit messages, review gates).
