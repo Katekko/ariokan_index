@@ -1,0 +1,123 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:ariokan_index/entities/user/user_repository.dart';
+import 'package:ariokan_index/shared/utils/result.dart';
+import 'package:ariokan_index/entities/user/user.dart' as domain;
+import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
+
+/// Firebase implementation (T024) of [UserRepository].
+///
+/// Atomicity strategy (Option B from design notes):
+/// 1. Create Firebase Auth user (email/password) -> uid.
+/// 2. Run a Firestore transaction that fails if the username doc already exists.
+///    In the same transaction create:
+///       - usernames/{username}  (reservation doc with uid)
+///       - users/{uid} (user profile data)
+/// 3. If transaction fails with username taken, delete the just-created auth user (rollback) and return usernameTaken error.
+/// 4. If transaction fails for any other reason, attempt rollback (delete auth user). If rollback deletion also fails, surface rollbackFailed.
+///
+/// This gives at-most-one successful pairing of (username, uid) even under racing requests.
+/// NOTE: Requires prior Firebase initialization via initFirebase().
+class UserRepositoryFirebase extends UserRepository {
+  UserRepositoryFirebase({fb.FirebaseAuth? auth, FirebaseFirestore? firestore})
+    : _auth = auth ?? fb.FirebaseAuth.instance,
+      _fs = firestore ?? FirebaseFirestore.instance;
+
+  final fb.FirebaseAuth _auth;
+  final FirebaseFirestore _fs;
+
+  static const _usernameCollection = 'usernames';
+  static const _usersCollection = 'users';
+  static const _usernameTakenSentinel = 'USERNAME_TAKEN_SENTINEL';
+
+  @override
+  Future<Result<SignupError, domain.User>> createUserWithUsername({
+    required String username,
+    required String email,
+    required String password,
+  }) async {
+    fb.UserCredential cred;
+    try {
+      cred = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } on fb.FirebaseAuthException catch (e) {
+      return Failure(_mapAuthError(e));
+    } catch (_) {
+      return Failure(const SignupError(SignupErrorCode.networkFailure));
+    }
+
+    final uid = cred.user?.uid;
+    if (uid == null) {
+      // Extremely unlikely, treat as unknown and abort.
+      return Failure(const SignupError(SignupErrorCode.unknown));
+    }
+
+    bool authRollbackNeeded = true;
+    try {
+      final createdAtIso = DateTime.now().toUtc().toIso8601String();
+      await _fs.runTransaction((tx) async {
+        final usernameRef = _fs.collection(_usernameCollection).doc(username);
+        final usernameSnap = await tx.get(usernameRef);
+        if (usernameSnap.exists) {
+          throw _usernameTakenSentinel; // abort path
+        }
+        final userRef = _fs.collection(_usersCollection).doc(uid);
+        // Prepare docs
+        tx.set(usernameRef, {'uid': uid, 'createdAt': createdAtIso});
+        tx.set(userRef, {
+          'id': uid,
+          'username': username,
+          'email': email,
+          'createdAt': createdAtIso,
+        });
+      });
+      authRollbackNeeded = false; // success, keep auth user
+      final user = domain.User(
+        id: uid,
+        username: username,
+        email: email,
+        createdAt: DateTime.now().toUtc(),
+      );
+      return Success(user);
+    } catch (e) {
+      // Attempt rollback (delete auth user) if Firestore transaction failed.
+      if (authRollbackNeeded) {
+        try {
+          await cred.user?.delete();
+        } catch (_) {
+          if (e == _usernameTakenSentinel) {
+            // If deletion failed and username was taken, escalate to rollbackFailed
+            return Failure(const SignupError(SignupErrorCode.rollbackFailed));
+          }
+          // Generic rollback failure
+          return Failure(const SignupError(SignupErrorCode.rollbackFailed));
+        }
+      }
+      if (e == _usernameTakenSentinel) {
+        return Failure(const SignupError(SignupErrorCode.usernameTaken));
+      }
+      return Failure(const SignupError(SignupErrorCode.networkFailure));
+    }
+  }
+
+  SignupError _mapAuthError(fb.FirebaseAuthException e) {
+    switch (e.code) {
+      case 'email-already-in-use':
+        // Could introduce a dedicated code later; treat as unknown for now.
+        return const SignupError(
+          SignupErrorCode.unknown,
+          message: 'email in use',
+        );
+      case 'invalid-email':
+        return const SignupError(SignupErrorCode.emailInvalid);
+      case 'weak-password':
+        return const SignupError(SignupErrorCode.passwordWeak);
+      case 'network-request-failed':
+        return const SignupError(SignupErrorCode.networkFailure);
+      default:
+        return SignupError(SignupErrorCode.unknown, message: e.code);
+    }
+  }
+}

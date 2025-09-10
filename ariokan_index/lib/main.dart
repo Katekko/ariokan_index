@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:ariokan_index/shared/firebase/firebase_init.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initFirebase();
   runApp(const MainApp());
 }
 
