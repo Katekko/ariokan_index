@@ -1,0 +1,16 @@
+{
+  "folders": [
+    { "name": "Root", "path": "." },
+    { "name": "App", "path": "ariokan_index" }
+  ],
+  "settings": {
+    "dart.runPubGetOnPubspecChanges": "always",
+    "dart.flutterHotReloadOnSave": "all",
+    "files.exclude": {
+      "**/build": true
+    },
+    "search.exclude": {
+      "**/build": true
+    }
+  }
+}

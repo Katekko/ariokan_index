@@ -1,12 +1,14 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter/material.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:ariokan_index/features/auth_signup/ui/signup_form.dart';
-import 'package:ariokan_index/features/auth_signup/logic/signup_controller.dart';
-import 'package:ariokan_index/entities/user/user_repository.dart';
-import 'package:ariokan_index/shared/utils/result.dart';
 import 'package:ariokan_index/entities/user/user.dart';
+import 'package:ariokan_index/entities/user/user_repository.dart';
+import 'package:ariokan_index/features/auth_signup/logic/signup_controller.dart';
 import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
+import 'package:ariokan_index/features/auth_signup/ui/signup_form.dart';
+import 'package:ariokan_index/shared/utils/result.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
 import '../../../helpers/test_app.dart';
 
 class MockUserRepository extends Mock implements UserRepository {}
@@ -24,7 +26,12 @@ void main() {
     'shows validation errors after submit attempt with empty fields',
     (tester) async {
       await tester.pumpWidget(
-        localizedTestApp(SignupForm(controller: controller)),
+        localizedTestApp(
+          BlocProvider<SignupController>(
+            create: (_) => controller,
+            child: const SignupForm(),
+          ),
+        ),
       );
       await tester.tap(find.text('Sign Up')); // English default
       await tester.pump();
@@ -38,7 +45,12 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      localizedTestApp(SignupForm(controller: controller)),
+      localizedTestApp(
+        BlocProvider<SignupController>(
+          create: (_) => controller,
+          child: const SignupForm(),
+        ),
+      ),
     );
     await tester.tap(find.text('Sign Up'));
     await tester.pump();
@@ -65,7 +77,12 @@ void main() {
       ),
     );
     await tester.pumpWidget(
-      localizedTestApp(SignupForm(controller: controller)),
+      localizedTestApp(
+        BlocProvider<SignupController>(
+          create: (_) => controller,
+          child: const SignupForm(),
+        ),
+      ),
     );
     await tester.enterText(find.byType(TextFormField).at(0), 'user');
     await tester.enterText(
