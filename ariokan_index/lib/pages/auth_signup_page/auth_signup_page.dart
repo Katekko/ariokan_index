@@ -10,8 +10,7 @@ import 'package:go_router/go_router.dart';
 /// Embeds [SignupForm] and performs redirect to '/decks' when
 /// [SignupStatus.success] is reached. Navigation is idempotent.
 class AuthSignupPage extends StatefulWidget {
-  const AuthSignupPage({super.key, required this.controller});
-  final SignupController controller;
+  const AuthSignupPage({super.key});
 
   @override
   State<AuthSignupPage> createState() => _AuthSignupPageState();
@@ -33,8 +32,9 @@ class _AuthSignupPageState extends State<AuthSignupPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final controller = context.read<SignupController>();
     return BlocListener<SignupController, SignupState>(
-      bloc: widget.controller,
+      bloc: controller,
       listenWhen: _listenWhenStatusChanged,
       listener: _onStatusChanged,
       child: Scaffold(
@@ -44,7 +44,7 @@ class _AuthSignupPageState extends State<AuthSignupPage> {
             constraints: const BoxConstraints(maxWidth: 460),
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
-              child: SignupForm(controller: widget.controller),
+              child: const SignupForm(),
             ),
           ),
         ),

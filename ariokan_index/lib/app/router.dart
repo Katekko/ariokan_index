@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ariokan_index/features/auth_signup/logic/signup_controller.dart';
-import 'package:ariokan_index/pages/auth_signup_page/auth_signup_page.dart';
+import 'package:ariokan_index/pages/auth_signup_page/auth_signup_page_setup.dart';
 
 /// Creates the application router.
 /// Routes:
 ///  /signup  -> AuthSignupPage
 ///  /decks   -> Placeholder deck list page
-GoRouter createRouter(SignupController signupController) {
+GoRouter createRouter() {
   return GoRouter(
     initialLocation: '/signup',
     routes: [
       GoRoute(
         path: '/signup',
         name: 'signup',
-        builder: (context, state) => AuthSignupPage(controller: signupController),
+        builder: (context, state) => const AuthSignupPageSetup(),
       ),
       GoRoute(
         path: '/decks',

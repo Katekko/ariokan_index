@@ -5,8 +5,7 @@ import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
 import 'package:ariokan_index/l10n/app_localizations.dart';
 
 class SignupForm extends StatefulWidget {
-  const SignupForm({super.key, required this.controller});
-  final SignupController controller;
+  const SignupForm({super.key});
 
   @override
   State<SignupForm> createState() => _SignupFormState();
@@ -46,13 +45,14 @@ class _SignupFormState extends State<SignupForm> {
     setState(() => _submitted = true);
     final valid = _formKey.currentState?.validate() ?? false;
     if (!valid) return;
-    widget.controller.submit();
+    context.read<SignupController>().submit();
   }
 
   @override
   Widget build(BuildContext context) {
+    final controller = context.read<SignupController>();
     return BlocBuilder<SignupController, SignupState>(
-      bloc: widget.controller,
+      bloc: controller,
       builder: (context, state) {
         final busy = state.status == SignupStatus.submitting;
         final success = state.status == SignupStatus.success;
@@ -72,14 +72,14 @@ class _SignupFormState extends State<SignupForm> {
                   decoration: InputDecoration(
                     labelText: l10n.signup_username_label,
                   ),
-                  onChanged: widget.controller.updateUsername,
+                  onChanged: controller.updateUsername,
                   validator: _usernameValidator,
                 ),
                 TextFormField(
                   decoration: InputDecoration(
                     labelText: l10n.signup_email_label,
                   ),
-                  onChanged: widget.controller.updateEmail,
+                  onChanged: controller.updateEmail,
                   validator: _emailValidator,
                 ),
                 TextFormField(
@@ -87,7 +87,7 @@ class _SignupFormState extends State<SignupForm> {
                     labelText: l10n.signup_password_label,
                   ),
                   obscureText: true,
-                  onChanged: widget.controller.updatePassword,
+                  onChanged: controller.updatePassword,
                   validator: _passwordValidator,
                 ),
                 const SizedBox(height: 16),
