@@ -7,10 +7,9 @@ import 'package:ariokan_index/entities/user/user_repository.dart';
 import 'package:ariokan_index/shared/utils/result.dart';
 import 'package:ariokan_index/entities/user/user.dart';
 import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
+import '../../../helpers/test_app.dart';
 
 // Placeholder integration-like test; will be expanded with navigation & mocks later.
-
-Widget _wrap(Widget child) => MaterialApp(home: Scaffold(body: child));
 
 class MockUserRepository extends Mock implements UserRepository {}
 
@@ -40,7 +39,9 @@ void main() {
         ),
       ),
     );
-    await tester.pumpWidget(_wrap(SignupForm(controller: controller)));
+    await tester.pumpWidget(
+      localizedTestApp(SignupForm(controller: controller)),
+    );
     await tester.enterText(find.byType(TextFormField).at(0), 'flowuser');
     await tester.enterText(
       find.byType(TextFormField).at(1),

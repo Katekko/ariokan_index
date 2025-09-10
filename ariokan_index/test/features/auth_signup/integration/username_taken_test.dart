@@ -6,8 +6,7 @@ import 'package:ariokan_index/features/auth_signup/logic/signup_controller.dart'
 import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
 import 'package:ariokan_index/entities/user/user_repository.dart';
 import 'package:ariokan_index/shared/utils/result.dart';
-
-Widget _wrap(Widget child) => MaterialApp(home: Scaffold(body: child));
+import '../../../helpers/test_app.dart';
 
 class MockUserRepository extends Mock implements UserRepository {}
 
@@ -31,7 +30,9 @@ void main() {
       (_) async => Failure(SignupError(SignupErrorCode.usernameTaken)),
     );
 
-    await tester.pumpWidget(_wrap(SignupForm(controller: controller)));
+    await tester.pumpWidget(
+      localizedTestApp(SignupForm(controller: controller)),
+    );
 
     await tester.enterText(find.byType(TextFormField).at(0), 'existing');
     await tester.enterText(
@@ -46,6 +47,6 @@ void main() {
     expect(controller.state.status, SignupStatus.error);
     expect(controller.state.error?.code, SignupErrorCode.usernameTaken);
     // Error message currently shows enum code string.
-    expect(find.textContaining('usernameTaken'), findsOneWidget);
+    expect(find.text('That username is already taken.'), findsOneWidget);
   });
 }

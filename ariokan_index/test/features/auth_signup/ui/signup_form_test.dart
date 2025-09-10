@@ -7,8 +7,7 @@ import 'package:ariokan_index/entities/user/user_repository.dart';
 import 'package:ariokan_index/shared/utils/result.dart';
 import 'package:ariokan_index/entities/user/user.dart';
 import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
-
-Widget _wrap(Widget child) => MaterialApp(home: Scaffold(body: child));
+import '../../../helpers/test_app.dart';
 
 class MockUserRepository extends Mock implements UserRepository {}
 
@@ -21,24 +20,31 @@ void main() {
     controller = SignupController(mockRepo);
   });
 
-  testWidgets('shows validation errors after submit attempt with empty fields', (tester) async {
-    await tester.pumpWidget(_wrap(SignupForm(controller: controller)));
-    await tester.tap(find.text('Sign Up'));
-    await tester.pump();
-    expect(find.textContaining('username'), findsWidgets);
-    expect(find.textContaining('email'), findsWidgets);
-    expect(find.textContaining('password'), findsWidgets);
-  });
+  testWidgets(
+    'shows validation errors after submit attempt with empty fields',
+    (tester) async {
+      await tester.pumpWidget(
+        localizedTestApp(SignupForm(controller: controller)),
+      );
+      await tester.tap(find.text('Sign Up')); // English default
+      await tester.pump();
+      expect(find.text('Username is required.'), findsOneWidget);
+      expect(find.text('Email is required.'), findsOneWidget);
+      expect(find.text('Password is required.'), findsOneWidget);
+    },
+  );
 
   testWidgets('shows validation messages on invalid submit attempt', (
     tester,
   ) async {
-    await tester.pumpWidget(_wrap(SignupForm(controller: controller)));
+    await tester.pumpWidget(
+      localizedTestApp(SignupForm(controller: controller)),
+    );
     await tester.tap(find.text('Sign Up'));
     await tester.pump();
-    expect(find.textContaining('username'), findsWidgets);
-    expect(find.textContaining('email'), findsWidgets);
-    expect(find.textContaining('password'), findsWidgets);
+    expect(find.text('Username is required.'), findsOneWidget);
+    expect(find.text('Email is required.'), findsOneWidget);
+    expect(find.text('Password is required.'), findsOneWidget);
   });
 
   testWidgets('successful submit triggers repository call', (tester) async {
@@ -58,18 +64,20 @@ void main() {
         ),
       ),
     );
-    await tester.pumpWidget(_wrap(SignupForm(controller: controller)));
+    await tester.pumpWidget(
+      localizedTestApp(SignupForm(controller: controller)),
+    );
     await tester.enterText(find.byType(TextFormField).at(0), 'user');
     await tester.enterText(
       find.byType(TextFormField).at(1),
       'user@example.com',
     );
     await tester.enterText(find.byType(TextFormField).at(2), 'secret123');
-  await tester.tap(find.text('Sign Up'));
-  await tester.pump();
-  // Allow any async to complete.
-  await tester.pump(const Duration(milliseconds: 10));
-  expect(controller.state.status, SignupStatus.success);
+    await tester.tap(find.text('Sign Up'));
+    await tester.pump();
+    // Allow any async to complete.
+    await tester.pump(const Duration(milliseconds: 10));
+    expect(controller.state.status, SignupStatus.success);
     verify(
       () => mockRepo.createUserWithUsername(
         username: 'user',

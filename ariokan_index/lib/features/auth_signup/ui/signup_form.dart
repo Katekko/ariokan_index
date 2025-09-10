@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ariokan_index/features/auth_signup/logic/signup_controller.dart';
 import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
+import 'package:ariokan_index/l10n/app_localizations.dart';
 
 class SignupForm extends StatefulWidget {
   const SignupForm({super.key, required this.controller});
@@ -21,20 +22,23 @@ class _SignupFormState extends State<SignupForm> {
   }
 
   String? _usernameValidator(String? v) {
-    if ((v ?? '').isEmpty) return 'username required';
-    if (v!.length < 3) return 'username too short';
+    final l10n = AppLocalizations.of(context)!;
+    if ((v ?? '').isEmpty) return l10n.signup_field_error_username_required;
+    if (v!.length < 3) return l10n.signup_error_usernameInvalid;
     return null;
   }
 
   String? _emailValidator(String? v) {
-    if ((v ?? '').isEmpty) return 'email required';
-    if (!v!.contains('@')) return 'email invalid';
+    final l10n = AppLocalizations.of(context)!;
+    if ((v ?? '').isEmpty) return l10n.signup_field_error_email_required;
+    if (!v!.contains('@')) return l10n.signup_error_emailInvalid;
     return null;
   }
 
   String? _passwordValidator(String? v) {
-    if ((v ?? '').isEmpty) return 'password required';
-    if (v!.length < 6) return 'password too short';
+    final l10n = AppLocalizations.of(context)!;
+    if ((v ?? '').isEmpty) return l10n.signup_field_error_password_required;
+    if (v!.length < 6) return l10n.signup_error_passwordWeak;
     return null;
   }
 
@@ -53,26 +57,35 @@ class _SignupFormState extends State<SignupForm> {
         final busy = state.status == SignupStatus.submitting;
         final success = state.status == SignupStatus.success;
         final error = state.error;
+        final l10n = AppLocalizations.of(context)!;
         return AbsorbPointer(
           absorbing: busy || success,
           child: Form(
             key: _formKey,
-            autovalidateMode: _submitted ? AutovalidateMode.always : AutovalidateMode.disabled,
+            autovalidateMode: _submitted
+                ? AutovalidateMode.always
+                : AutovalidateMode.disabled,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextFormField(
-                  decoration: const InputDecoration(labelText: 'Username'),
+                  decoration: InputDecoration(
+                    labelText: l10n.signup_username_label,
+                  ),
                   onChanged: widget.controller.updateUsername,
                   validator: _usernameValidator,
                 ),
                 TextFormField(
-                  decoration: const InputDecoration(labelText: 'Email'),
+                  decoration: InputDecoration(
+                    labelText: l10n.signup_email_label,
+                  ),
                   onChanged: widget.controller.updateEmail,
                   validator: _emailValidator,
                 ),
                 TextFormField(
-                  decoration: const InputDecoration(labelText: 'Password'),
+                  decoration: InputDecoration(
+                    labelText: l10n.signup_password_label,
+                  ),
                   obscureText: true,
                   onChanged: widget.controller.updatePassword,
                   validator: _passwordValidator,
@@ -80,13 +93,15 @@ class _SignupFormState extends State<SignupForm> {
                 const SizedBox(height: 16),
                 if (error != null)
                   Text(
-                    error.message ?? error.code.toString(),
+                    _mapError(l10n, error),
                     style: const TextStyle(color: Colors.red),
                   ),
                 const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: busy ? null : _onSubmit,
-                  child: Text(success ? 'Done' : 'Sign Up'),
+                  child: Text(
+                    success ? l10n.signup_submit_done : l10n.signup_submit,
+                  ),
                 ),
               ],
             ),
@@ -94,5 +109,17 @@ class _SignupFormState extends State<SignupForm> {
         );
       },
     );
+  }
+
+  String _mapError(AppLocalizations l10n, SignupError error) {
+    return switch (error.code) {
+      SignupErrorCode.usernameTaken => l10n.signup_error_usernameTaken,
+      SignupErrorCode.usernameInvalid => l10n.signup_error_usernameInvalid,
+      SignupErrorCode.emailInvalid => l10n.signup_error_emailInvalid,
+      SignupErrorCode.passwordWeak => l10n.signup_error_passwordWeak,
+      SignupErrorCode.networkFailure => l10n.signup_error_networkFailure,
+      SignupErrorCode.rollbackFailed => l10n.signup_error_rollbackFailed,
+      SignupErrorCode.unknown => l10n.signup_error_unknown,
+    };
   }
 }

@@ -9,6 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
   # Auth Signup feature deps (added T002)
   firebase_core: ^2.30.0
   firebase_auth: ^4.19.0
@@ -24,3 +27,4 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true
