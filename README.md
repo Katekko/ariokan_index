@@ -178,5 +178,27 @@ No subcollections required for MVP.
 6. Detail view (view_deck) renders code, tags, version link
 7. Edit tags sheet (edit_deck_tags) updates only strategy tags
 
+## Debug Logging (Development)
+
+Lightweight debug logging utility added at `lib/shared/utils/app_logger.dart`.
+
+Highlights:
+* Initialized in `main.dart` via `AppLogger.init()` and `AppLogger.runGuarded()`.
+* Captures framework (`FlutterError.onError`), platform dispatcher, and zone uncaught errors.
+* Colorized log levels (INFO/WARN/ERR) only in debug/profile; release minimizes noise.
+* Repository example: user signup repository logs auth failures and rollback issues without exposing sensitive input.
+
+Usage example:
+```
+AppLogger.info('Starting fetch', 'endpoint=/decks');
+try {
+  // ... work ...
+} catch (e, s) {
+  AppLogger.error('DeckRepository', 'Fetch failed', error: e, stack: s);
+}
+```
+
+Avoid logging secrets (passwords, tokens, PII). Sanitize values first.
+
 ## License
 TBD.

@@ -4,6 +4,7 @@ import 'package:ariokan_index/entities/user/user_repository.dart';
 import 'package:ariokan_index/shared/utils/result.dart';
 import 'package:ariokan_index/entities/user/user.dart' as domain;
 import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
+import 'package:ariokan_index/shared/utils/app_logger.dart';
 
 /// Firebase implementation (T024) of [UserRepository].
 ///
@@ -36,21 +37,32 @@ class UserRepositoryFirebase extends UserRepository {
     required String email,
     required String password,
   }) async {
-    fb.UserCredential cred;
+    late final fb.UserCredential cred;
     try {
       cred = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
     } on fb.FirebaseAuthException catch (e) {
+      AppLogger.error(
+        'UserRepositoryFirebase',
+        'Auth createUser failed',
+        error: e,
+        stack: e.stackTrace,
+      );
       return Failure(_mapAuthError(e));
     } catch (_) {
+      AppLogger.error('UserRepositoryFirebase', 'Unknown auth exception');
       return Failure(const SignupError(SignupErrorCode.networkFailure));
     }
 
     final uid = cred.user?.uid;
     if (uid == null) {
       // Extremely unlikely, treat as unknown and abort.
+      AppLogger.error(
+        'UserRepositoryFirebase',
+        'Firebase credential missing uid',
+      );
       return Failure(const SignupError(SignupErrorCode.unknown));
     }
 
@@ -61,6 +73,7 @@ class UserRepositoryFirebase extends UserRepository {
         final usernameRef = _fs.collection(_usernameCollection).doc(username);
         final usernameSnap = await tx.get(usernameRef);
         if (usernameSnap.exists) {
+          AppLogger.info('Username already exists', username);
           throw _usernameTakenSentinel; // abort path
         }
         final userRef = _fs.collection(_usersCollection).doc(uid);
@@ -87,6 +100,11 @@ class UserRepositoryFirebase extends UserRepository {
         try {
           await cred.user?.delete();
         } catch (_) {
+          AppLogger.error(
+            'UserRepositoryFirebase',
+            'Rollback delete auth user failed',
+            error: e,
+          );
           if (e == _usernameTakenSentinel) {
             // If deletion failed and username was taken, escalate to rollbackFailed
             return Failure(const SignupError(SignupErrorCode.rollbackFailed));
@@ -96,8 +114,14 @@ class UserRepositoryFirebase extends UserRepository {
         }
       }
       if (e == _usernameTakenSentinel) {
+        AppLogger.warn('Username taken detected after transaction', username);
         return Failure(const SignupError(SignupErrorCode.usernameTaken));
       }
+      AppLogger.error(
+        'UserRepositoryFirebase',
+        'Transaction/network failure',
+        error: e is Exception ? e : null,
+      );
       return Failure(const SignupError(SignupErrorCode.networkFailure));
     }
   }
