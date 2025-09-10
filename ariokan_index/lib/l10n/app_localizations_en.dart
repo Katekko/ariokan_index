@@ -58,4 +58,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signup_field_error_password_required => 'Password is required.';
+
+  @override
+  String get signup_error_emailAlreadyInUse => 'This email is already in use. Try signing in instead.';
 }

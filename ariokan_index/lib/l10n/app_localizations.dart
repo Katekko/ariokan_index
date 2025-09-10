@@ -194,6 +194,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password is required.'**
   String get signup_field_error_password_required;
+
+  /// No description provided for @signup_error_emailAlreadyInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'This email is already in use. Try signing in instead.'**
+  String get signup_error_emailAlreadyInUse;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

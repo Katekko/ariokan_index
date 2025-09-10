@@ -50,6 +50,7 @@ class UserRepositoryFirebase extends UserRepository {
         error: e,
         stack: e.stackTrace,
       );
+
       return Failure(_mapAuthError(e));
     } catch (_) {
       AppLogger.error('UserRepositoryFirebase', 'Unknown auth exception');
@@ -129,11 +130,7 @@ class UserRepositoryFirebase extends UserRepository {
   SignupError _mapAuthError(fb.FirebaseAuthException e) {
     switch (e.code) {
       case 'email-already-in-use':
-        // Could introduce a dedicated code later; treat as unknown for now.
-        return const SignupError(
-          SignupErrorCode.unknown,
-          message: 'email in use',
-        );
+        return const SignupError(SignupErrorCode.emailAlreadyInUse);
       case 'invalid-email':
         return const SignupError(SignupErrorCode.emailInvalid);
       case 'weak-password':

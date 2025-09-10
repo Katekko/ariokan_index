@@ -6,6 +6,7 @@ enum SignupErrorCode {
   usernameTaken,
   usernameInvalid,
   emailInvalid,
+  emailAlreadyInUse,
   passwordWeak,
   networkFailure,
   rollbackFailed,
@@ -34,11 +35,6 @@ class SignupState extends Equatable {
     required this.status,
     this.error,
   });
-  final String username;
-  final String email;
-  final String password;
-  final SignupStatus status;
-  final SignupError? error;
 
   factory SignupState.initial() => const SignupState(
     username: '',
@@ -46,6 +42,12 @@ class SignupState extends Equatable {
     password: '',
     status: SignupStatus.idle,
   );
+
+  final String username;
+  final String email;
+  final String password;
+  final SignupStatus status;
+  final SignupError? error;
 
   bool get isValid =>
       username.isNotEmpty && email.isNotEmpty && password.isNotEmpty;

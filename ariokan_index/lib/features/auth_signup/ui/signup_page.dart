@@ -1,14 +1,12 @@
+export '../logic/signup_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ariokan_index/features/auth_signup/logic/signup_controller.dart';
 import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
-import 'package:ariokan_index/features/auth_signup/ui/signup_form.dart';
+import 'package:ariokan_index/features/auth_signup/ui/widgets/signup_form.dart';
 import 'package:ariokan_index/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
-/// AuthSignupPage (T028)
-/// Embeds [SignupForm] and performs redirect to '/decks' when
-/// [SignupStatus.success] is reached. Navigation is idempotent.
 class AuthSignupPage extends StatefulWidget {
   const AuthSignupPage({super.key});
 

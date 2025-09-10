@@ -15,11 +15,6 @@ class _SignupFormState extends State<SignupForm> {
   final _formKey = GlobalKey<FormState>();
   bool _submitted = false;
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   String? _usernameValidator(String? v) {
     final l10n = AppLocalizations.of(context)!;
     if ((v ?? '').isEmpty) return l10n.signup_field_error_username_required;
@@ -116,11 +111,11 @@ class _SignupFormState extends State<SignupForm> {
       SignupErrorCode.usernameTaken => l10n.signup_error_usernameTaken,
       SignupErrorCode.usernameInvalid => l10n.signup_error_usernameInvalid,
       SignupErrorCode.emailInvalid => l10n.signup_error_emailInvalid,
+      SignupErrorCode.emailAlreadyInUse => l10n.signup_error_emailAlreadyInUse,
       SignupErrorCode.passwordWeak => l10n.signup_error_passwordWeak,
       SignupErrorCode.networkFailure => l10n.signup_error_networkFailure,
       SignupErrorCode.rollbackFailed => l10n.signup_error_rollbackFailed,
       SignupErrorCode.unknown => l10n.signup_error_unknown,
-      SignupErrorCode.emailAlreadyInUse => l10n.signup_error_emailAlreadyInUse,
     };
   }
 }

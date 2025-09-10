@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ariokan_index/pages/auth_signup_page/auth_signup_page_setup.dart';
+import 'package:ariokan_index/features/auth_signup/ui/signup_page_setup.dart';
 
 /// Creates the application router.
 /// Routes:
