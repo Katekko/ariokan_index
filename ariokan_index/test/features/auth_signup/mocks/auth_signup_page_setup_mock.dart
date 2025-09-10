@@ -5,17 +5,22 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class SignupControllerMock extends Mock implements SignupController {
+class SignupControllerMock extends MockCubit<SignupState>
+    implements SignupController {
   SignupControllerMock._();
 
   static void register() {
     final mock = SignupControllerMock._();
-    
+
     setUpAll(() => di.registerFactory<SignupController>(() => mock));
 
     setUp(() {
       when(mock.submit).thenAnswer((_) async {});
-      whenListen(mock, Stream.empty(), initialState: SignupState.initial());
+      whenListen<SignupState>(
+        mock,
+        Stream.empty(),
+        initialState: SignupState.initial(),
+      );
     });
 
     tearDown(() {
