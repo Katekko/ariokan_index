@@ -94,6 +94,25 @@ As an unauthenticated player, I want to create an account by choosing a unique u
  - **FR-015**: System MUST enforce password minimum length of 6 characters (no further complexity rules) and should allow up to 128 characters.
  - **FR-016**: System MUST treat a network failure after authentication but before profile record persistence as a failed signup: revert session (sign out) and present a retry option; no username registry entry is left behind.
 
+### Error Codes
+The signup process will surface a constrained, documented set of error codes (internal → mapped to localized UI strings). These codes align with `SignupErrorCode` enum (updated 2025-09-10):
+
+| Code | Meaning | Source / Trigger |
+|------|---------|------------------|
+| usernameTaken | Username already reserved | Firestore transaction uniqueness check |
+| usernameInvalid | Username fails regex validation | Client + server validation |
+| emailInvalid | Email format invalid (pre-auth) | Client validation / auth exception mapping |
+| emailAlreadyInUse | Firebase auth reports email collision | Auth provider error mapping |
+| passwordWeak | Password below acceptable criteria (min length) | Client validation / auth weak-password error |
+| networkFailure | Transient network/service failure (auth or Firestore) | Auth/Firestore exceptions not otherwise mapped |
+| rollbackFailed | Failure during compensating action after partial success (e.g., auth user deletion) | Post-failure cleanup path |
+| unknown | Fallback for unmapped/unexpected errors | Any unclassified exception |
+
+Notes:
+- `emailAlreadyInUse` added after initial spec draft; tests and contract docs will be updated (Tasks T018 + T032).
+- UI must show user-friendly localized strings (not raw codes). Codes remain stable identifiers for logging & tests.
+
+
 *All previously ambiguous items have been resolved per decisions provided.*
 
 ### Key Entities *(include if feature involves data)*
