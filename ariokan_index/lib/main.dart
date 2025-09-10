@@ -4,9 +4,9 @@ import 'package:ariokan_index/shared/firebase/firebase_init.dart';
 import 'package:ariokan_index/shared/utils/app_logger.dart';
 import 'l10n/app_localizations.dart';
 // Signup feature imports
-import 'package:ariokan_index/features/auth_signup/ui/signup_form.dart';
 import 'package:ariokan_index/features/auth_signup/logic/signup_controller.dart';
 import 'package:ariokan_index/entities/user/user_repository_firebase.dart';
+import 'package:ariokan_index/app/router.dart';
 
 Future<void> main() async {
   // Ensure bindings and logger
@@ -43,7 +43,8 @@ class _MainAppState extends State<MainApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    final router = createRouter(_signupController);
+    return MaterialApp.router(
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -52,23 +53,7 @@ class _MainAppState extends State<MainApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      home: Builder(
-        builder: (context) {
-          final l10n = AppLocalizations.of(context)!;
-          return Scaffold(
-            appBar: AppBar(title: Text(l10n.appTitle)),
-            body: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 420),
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(24),
-                  child: SignupForm(controller: _signupController),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
+      routerConfig: router,
     );
   }
 }
