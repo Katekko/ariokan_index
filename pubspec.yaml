@@ -30,6 +30,7 @@ dev_dependencies:
   mocktail: ^1.0.4
   alchemist: ^0.12.1
   bloc_test: ^10.0.0
+  fake_cloud_firestore: ^4.0.0
   
 flutter:
   uses-material-design: true
