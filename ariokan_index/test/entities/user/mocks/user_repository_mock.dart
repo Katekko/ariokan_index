@@ -9,7 +9,7 @@ import '../../mocks/entities_faker.dart';
 class UserRepositoryMock extends Mock implements UserRepository {
   UserRepositoryMock._();
 
-  static void register() {
+  static UserRepository register() {
     final mock = UserRepositoryMock._();
 
     setUpAll(() => di.registerFactory<UserRepository>(() => mock));
@@ -25,5 +25,7 @@ class UserRepositoryMock extends Mock implements UserRepository {
     });
 
     tearDown(() => reset(mock));
+
+    return mock;
   }
 }

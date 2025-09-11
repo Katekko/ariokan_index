@@ -9,12 +9,13 @@ class SignupControllerMock extends MockCubit<SignupState>
     implements SignupController {
   SignupControllerMock._();
 
-  static void register() {
+  static SignupController register() {
     final mock = SignupControllerMock._();
 
     setUpAll(() => di.registerFactory<SignupController>(() => mock));
 
     setUp(() {
+      when(mock.close).thenAnswer((_) async {});
       when(mock.submit).thenAnswer((_) async {});
       whenListen<SignupState>(
         mock,
@@ -26,5 +27,7 @@ class SignupControllerMock extends MockCubit<SignupState>
     tearDown(() {
       reset(mock);
     });
+
+    return mock;
   }
 }

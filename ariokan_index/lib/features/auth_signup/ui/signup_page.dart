@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ariokan_index/features/auth_signup/logic/signup_controller.dart';
 import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
-import 'package:ariokan_index/features/auth_signup/ui/widgets/signup_form.dart';
+import 'package:ariokan_index/features/auth_signup/ui/widgets/signup_form_widget.dart';
 import 'package:ariokan_index/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
@@ -42,7 +42,7 @@ class _AuthSignupPageState extends State<AuthSignupPage> {
             constraints: const BoxConstraints(maxWidth: 460),
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
-              child: const SignupForm(),
+              child: const SignupFormWidget(),
             ),
           ),
         ),

@@ -4,14 +4,14 @@ import 'package:ariokan_index/features/auth_signup/logic/signup_controller.dart'
 import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
 import 'package:ariokan_index/l10n/app_localizations.dart';
 
-class SignupForm extends StatefulWidget {
-  const SignupForm({super.key});
+class SignupFormWidget extends StatefulWidget {
+  const SignupFormWidget({super.key});
 
   @override
-  State<SignupForm> createState() => _SignupFormState();
+  State<SignupFormWidget> createState() => _SignupFormWidgetState();
 }
 
-class _SignupFormState extends State<SignupForm> {
+class _SignupFormWidgetState extends State<SignupFormWidget> {
   final _formKey = GlobalKey<FormState>();
   bool _submitted = false;
 
