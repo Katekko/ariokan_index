@@ -53,3 +53,4 @@ failures/
 *_failed.png
 *_diff.png
 *_masked.png
+missing_coverage.md

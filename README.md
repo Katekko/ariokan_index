@@ -283,3 +283,29 @@ Standard steps for adding a new feature slice:
 7. Open PR referencing spec & tasks; ensure constitution rules upheld.
 
 See `CONTRIBUTING.md` for detailed guidelines (lint, commit messages, review gates).
+
+## Test Coverage
+The simplified coverage script runs tests with coverage and produces a pull-request focused diff report.
+
+Usage:
+```
+./scripts/check-coverage.sh
+```
+Steps performed:
+1. `flutter test --coverage` (generates `coverage/lcov.info`).
+2. `git diff origin/main | pull_request_coverage --output-mode markdown --markdown-mode dart --fully-tested-message "All covered" > pull_request_coverage.md`
+
+Output:
+- `coverage/lcov.info`: Raw lcov data from Flutter.
+- `pull_request_coverage.md`: Markdown summary for only the lines changed relative to `origin/main`. Shows uncovered changed lines or the message `All covered` if every changed Dart line has test coverage.
+
+Notes:
+- Requires the external CLI `pull_request_coverage` in your PATH. If absent, the diff report is skipped (tests still run).
+- Intended for local validation and CI hooks; can be extended later with thresholds if needed.
+
+Example (just run):
+```
+./scripts/check-coverage.sh
+```
+
+Additions or improvements (like custom base ref) can be added once needed.
