@@ -18,6 +18,9 @@ class AppLogger {
   static AppLogger testCreate() => AppLogger._();
 
   static bool _initialized = false;
+  /// When true (typically in tests), suppresses all info/warn/error console output.
+  @visibleForTesting
+  static bool quiet = false;
 
   /// Initialize global error handlers. Safe to call multiple times; only first is applied.
   static void init() {
@@ -42,12 +45,12 @@ class AppLogger {
   }
 
   static void info(String message, [String? detail]) {
-    if (kReleaseMode) return;
+  if (quiet || kReleaseMode) return;
     _print(_Ansi.blue('INFO'), message, detail: detail);
   }
 
   static void warn(String message, [String? detail]) {
-    if (kReleaseMode) return;
+  if (quiet || kReleaseMode) return;
     _print(_Ansi.yellow('WARN'), message, detail: detail);
   }
 
@@ -57,6 +60,7 @@ class AppLogger {
     Object? error,
     StackTrace? stack,
   }) {
+  if (quiet && kDebugMode) return;
     final combined = '[${DateTime.now().toIso8601String()}][$source] $message';
     if (kDebugMode) {
       developer.log(
@@ -93,6 +97,7 @@ class AppLogger {
   }
 
   static void _print(String level, String message, {String? detail}) {
+  if (quiet) return;
     final ts = DateTime.now().toIso8601String();
     final base = '[$ts][$level] $message';
     final out = detail == null ? base : '$base — $detail';

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  setUp(() => AppLogger.quiet = false);
   group('AppLogger & _Ansi', () {
     String stripAnsi(String s) => s.replaceAll(RegExp(r'\u001B\[[0-9;]*m'), '');
 

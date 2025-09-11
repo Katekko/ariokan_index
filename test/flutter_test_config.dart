@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:alchemist/alchemist.dart';
+import 'package:ariokan_index/shared/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   GetIt.I.allowReassignment = true;
+  AppLogger.quiet = true;
 
   return AlchemistConfig.runWithConfig(
     run: testMain,
