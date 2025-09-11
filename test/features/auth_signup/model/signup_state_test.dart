@@ -2,6 +2,26 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
 
 void main() {
+  group('SignupError', () {
+    test('toString contains code and message', () {
+      const err = SignupError(SignupErrorCode.emailInvalid, message: 'bad');
+      final text = err.toString();
+      expect(text, contains('SignupError'));
+      expect(text, contains('emailInvalid'));
+      expect(text, contains('bad'));
+    });
+
+    test('equality via props', () {
+      const a = SignupError(SignupErrorCode.usernameTaken, message: 'x');
+      const b = SignupError(SignupErrorCode.usernameTaken, message: 'x');
+      const c = SignupError(SignupErrorCode.usernameTaken, message: 'y');
+      const d = SignupError(SignupErrorCode.emailInvalid, message: 'x');
+      expect(a, equals(b));
+      expect(a == c, isFalse);
+      expect(a == d, isFalse);
+    });
+  });
+
   group('SignupState', () {
     test('initial state is idle and invalid', () {
       final s = SignupState.initial();

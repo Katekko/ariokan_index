@@ -15,6 +15,11 @@ void main() {
   const goldenSize = Size(400, 400);
   final controller = SignupControllerMock.register();
 
+  test('constructor can be instantiated (const)', () {
+    const widget = SignupFormWidget(key: ValueKey('signup-form'));
+    expect(widget.key, const ValueKey('signup-form'));
+  });
+
   Widget widgetBuilder() => localizedTestApp(
     BlocProvider<SignupController>(
       create: (_) => controller,
