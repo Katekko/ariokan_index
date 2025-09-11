@@ -34,6 +34,7 @@ Future<void> testGoldenClickable(
   required Widget Function() builder,
   required Finder finder,
   Future<void> Function()? setUp,
+  Size? size,
 }) async {
   return goldenTest(
     description,
@@ -49,7 +50,10 @@ Future<void> testGoldenClickable(
 
       return GoldenTestScenario(
         name: 'web',
-        constraints: BoxConstraints(maxWidth: 1280, maxHeight: 720),
+        constraints: BoxConstraints(
+          maxWidth: size?.width ?? 1280,
+          maxHeight: size?.height ?? 720,
+        ),
         child: builder(),
       );
     },

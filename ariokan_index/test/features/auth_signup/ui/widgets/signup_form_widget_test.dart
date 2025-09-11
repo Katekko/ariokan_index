@@ -10,6 +10,7 @@ import '../../../../helpers/test_app.dart';
 import '../../mocks/auth_signup_page_setup_mock.dart';
 
 void main() {
+  const goldenSize = Size(400, 400);
   final controller = SignupControllerMock.register();
 
   Widget widgetBuilder() => localizedTestApp(
@@ -23,21 +24,20 @@ void main() {
     testWidgetsGolden(
       'renders initial signup form',
       fileName: 'auth_signup_form_idle',
-      size: Size(400, 400),
+      size: goldenSize,
       builder: widgetBuilder,
+    );
+
+    testGoldenClickable(
+      'shows validation errors on empty submit',
+      fileName: 'auth_signup_form_loading',
+      size: goldenSize,
+      builder: widgetBuilder,
+      finder: find.text('Sign Up'),
     );
   });
 
   group('Interactions', () {
-    testWidgets('shows validation errors on empty submit', (tester) async {
-      await tester.pumpWidget(widgetBuilder());
-      await tester.tap(find.text('Sign Up'));
-      await tester.pump();
-      expect(find.text('Username is required.'), findsOneWidget);
-      expect(find.text('Email is required.'), findsOneWidget);
-      expect(find.text('Password is required.'), findsOneWidget);
-    });
-
     testWidgets('successful submit triggers controller.submit', (tester) async {
       await tester.pumpWidget(widgetBuilder());
       await tester.enterText(find.byType(TextFormField).at(0), 'user');
