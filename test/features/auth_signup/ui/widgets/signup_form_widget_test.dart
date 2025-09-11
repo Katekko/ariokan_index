@@ -1,9 +1,11 @@
 import 'package:ariokan_index/features/auth_signup/logic/signup_controller.dart';
 import 'package:ariokan_index/features/auth_signup/ui/widgets/signup_form_widget.dart';
+import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bloc_test/bloc_test.dart';
 
 import '../../../../helpers/golden.dart';
 import '../../../../helpers/test_app.dart';
@@ -51,5 +53,44 @@ void main() {
 
       verify(controller.submit).called(1);
     });
+  });
+
+  group('Error display', () {
+    for (final tuple in [
+      (SignupErrorCode.usernameTaken, 'That username is already taken.'),
+      (SignupErrorCode.usernameInvalid, 'Please enter a valid username.'),
+      (SignupErrorCode.emailInvalid, 'Please enter a valid email address.'),
+      (
+        SignupErrorCode.emailAlreadyInUse,
+        'This email is already in use. Try signing in instead.',
+      ),
+      (SignupErrorCode.passwordWeak, 'Password is too weak.'),
+      (SignupErrorCode.networkFailure, 'Network issue, try again.'),
+      (
+        SignupErrorCode.rollbackFailed,
+        'Account creation partially failed. Please contact support.',
+      ),
+      (SignupErrorCode.unknown, 'Something went wrong. Try again.'),
+    ]) {
+      testWidgets('shows error text for ${tuple.$1}', (tester) async {
+        whenListen(
+          controller,
+          Stream.fromIterable([
+            SignupState.initial(),
+            SignupState(
+              username: 'user',
+              email: 'user@example.com',
+              password: 'secret123',
+              status: SignupStatus.error,
+              error: SignupError(tuple.$1),
+            ),
+          ]),
+          initialState: SignupState.initial(),
+        );
+        await tester.pumpWidget(widgetBuilder());
+        await tester.pump();
+        expect(find.text(tuple.$2), findsOneWidget);
+      });
+    }
   });
 }
