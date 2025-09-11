@@ -161,6 +161,27 @@ void main() {
       expect(controller.state.error?.code, SignupErrorCode.networkFailure);
     });
 
+    test(
+      'exception thrown by repository triggers catch networkFailure',
+      () async {
+        controller
+          ..updateUsername('user')
+          ..updateEmail('user@example.com')
+          ..updatePassword('secret123');
+        when(
+          () => mockRepo.createUserWithUsername(
+            username: any(named: 'username'),
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          ),
+        ).thenThrow(Exception('boom'));
+        await controller.submit();
+        expect(controller.state.status, SignupStatus.error);
+        expect(controller.state.error?.code, SignupErrorCode.networkFailure);
+        expect(controller.submit(), isA<Future<void>>());
+      },
+    );
+
     test('invalid username triggers early error and no repo call', () async {
       controller
         ..updateUsername('')

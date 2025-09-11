@@ -38,6 +38,23 @@ void main() {
       expect(u, isNot(equals(u2)));
     });
 
+    test('copyWith with no arguments returns value-equal instance (covers null fallbacks)', () {
+      final u = User(
+        id: id,
+        username: username,
+        email: email,
+        createdAt: created,
+      );
+      final u2 = u.copyWith();
+      expect(u2, equals(u));
+      expect(identical(u2, u), isFalse);
+
+      expect(u2.id, id);
+      expect(u2.username, username);
+      expect(u2.email, email);
+      expect(u2.createdAt, created);
+    });
+
     test('toString contains key fields', () {
       final u = User(
         id: id,
