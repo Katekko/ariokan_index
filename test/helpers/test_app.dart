@@ -3,6 +3,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ariokan_index/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
+import 'mock_go_router.dart';
+
 /// Creates a simple localized MaterialApp for widget tests with a direct child.
 Widget localizedTestApp(Widget child, {Locale? locale}) => MaterialApp(
   locale: locale,
@@ -44,26 +46,9 @@ Widget localizedTestRouterApp({
   );
 }
 
-/// Convenience helper for tests needing only a small mocked route set.
-/// Provide a map of path -> widget builder (Widget or Builder returning Widget).
-/// Example:
-///   mockedRouterApp({'/a': (_) => const Text('A'), '/b': (_) => const Text('B')})
-Widget mockedRouterApp(
-  Map<String, WidgetBuilder> routeMap, {
-  String? initialLocation,
-  Locale? locale,
-  List<NavigatorObserver>? observers,
-}) {
-  final routes = routeMap.entries
-      .map(
-        (e) =>
-            GoRoute(path: e.key, builder: (context, state) => e.value(context)),
-      )
-      .toList(growable: false);
-  return localizedTestRouterApp(
-    routes: routes,
-    initialLocation: initialLocation ?? routes.first.path,
-    locale: locale,
-    observers: observers,
+Widget mockedRouterApp(Widget child, {MockGoRouter? mockRouter}) {
+  return MockGoRouterProvider(
+    goRouter: mockRouter ?? MockGoRouter(),
+    child: child,
   );
 }

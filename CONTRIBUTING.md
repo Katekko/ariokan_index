@@ -55,6 +55,9 @@ Recommended minimum per feature:
 - Validators: unit tests (`shared/utils/validators.dart`)
 - Critical interaction (e.g., create deck form): widget or golden test (planned harness)
 
+For detailed testing patterns (navigation, DI resets, mocking) see `memory/test_instructions.md` (authoritative) and pointer stubs in `.github/instructions/`.
+
+
 ## Architecture Guardrails
 - Repositories live under `entities/<domain>/*_repository.dart`
 - UI widgets limited to rendering + invoking controller intent methods
