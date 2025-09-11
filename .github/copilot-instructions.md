@@ -3,3 +3,5 @@ Before making any changes to this project that could conflict with existing spec
 If you have any question about the dart / flutter documentation, use the MCP/tool to see for your self
 
 When talking about the flutter project you can find the project in `./ariokan_index`.
+
+Never create tests that is nor mirroring the existing files.
