@@ -5,6 +5,7 @@ import 'package:ariokan_index/shared/utils/result.dart';
 import 'package:ariokan_index/entities/user/user.dart' as domain;
 import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
 import 'package:ariokan_index/shared/utils/app_logger.dart';
+import 'package:flutter/cupertino.dart';
 
 /// Firebase implementation (T024) of [UserRepository].
 ///
@@ -20,12 +21,13 @@ import 'package:ariokan_index/shared/utils/app_logger.dart';
 /// This gives at-most-one successful pairing of (username, uid) even under racing requests.
 /// NOTE: Requires prior Firebase initialization via initFirebase().
 class UserRepositoryFirebase extends UserRepository {
-  UserRepositoryFirebase({fb.FirebaseAuth? auth, FirebaseFirestore? firestore})
-    : _auth = auth ?? fb.FirebaseAuth.instance,
-      _fs = firestore ?? FirebaseFirestore.instance;
+  UserRepositoryFirebase({required this.auth, required this.firestore});
 
-  final fb.FirebaseAuth _auth;
-  final FirebaseFirestore _fs;
+  @visibleForTesting
+  final fb.FirebaseAuth auth;
+
+  @visibleForTesting
+  final FirebaseFirestore firestore;
 
   static const _usernameCollection = 'usernames';
   static const _usersCollection = 'users';
@@ -39,7 +41,7 @@ class UserRepositoryFirebase extends UserRepository {
   }) async {
     late final fb.UserCredential cred;
     try {
-      cred = await _auth.createUserWithEmailAndPassword(
+      cred = await auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -70,14 +72,16 @@ class UserRepositoryFirebase extends UserRepository {
     bool authRollbackNeeded = true;
     try {
       final createdAtIso = DateTime.now().toUtc().toIso8601String();
-      await _fs.runTransaction((tx) async {
-        final usernameRef = _fs.collection(_usernameCollection).doc(username);
+      await firestore.runTransaction((tx) async {
+        final usernameRef = firestore
+            .collection(_usernameCollection)
+            .doc(username);
         final usernameSnap = await tx.get(usernameRef);
         if (usernameSnap.exists) {
           AppLogger.info('Username already exists', username);
           throw _usernameTakenSentinel; // abort path
         }
-        final userRef = _fs.collection(_usersCollection).doc(uid);
+        final userRef = firestore.collection(_usersCollection).doc(uid);
         // Prepare docs
         tx.set(usernameRef, {'uid': uid, 'createdAt': createdAtIso});
         tx.set(userRef, {

@@ -9,6 +9,7 @@ This is the canonical test guideline document. Any pointer `.instructions.md` fi
 - Fast feedback: prefer unit / lightweight widget tests over full integration unless required.
 - Focused assertions: verify intent (state change, navigation invoked) over framework internals.
 - Mirror production layout: place tests in matching directory structure under `test/`.
+- Every test should have di.reset inside the tearDownAll
 
 ## Navigation / Route Testing
 Widgets often invoke `context.go('/path')` via `go_router`. Two approaches:
