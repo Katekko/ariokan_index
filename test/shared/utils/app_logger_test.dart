@@ -66,6 +66,18 @@ void main() {
       expect(prints.any((l) => l.contains('After')), isTrue);
     });
 
+    test(
+      'runGuarded body throws -> zone error handler invoked (Late init path)',
+      () {
+        expect(
+          () => AppLogger.runGuarded<void>(() => throw Exception('boom')),
+          throwsA(
+            predicate((e) => e.toString().contains('LateInitializationError')),
+          ),
+        );
+      },
+    );
+
     test('attachZone initializes only once', () {
       // Call multiple times; should not throw.
       expect(AppLogger.attachZone, returnsNormally);
@@ -83,6 +95,20 @@ void main() {
       );
       // Should not throw.
       expect(() => FlutterError.onError!(details), returnsNormally);
+    });
+
+    test('PlatformDispatcher.onError returns true and logs', () {
+      AppLogger.init();
+      final handler = PlatformDispatcher.instance.onError;
+      expect(handler, isNotNull);
+      bool returned = false;
+      returned = handler!(Exception('platform'), StackTrace.current);
+      expect(returned, isTrue);
+    });
+
+    test('testCreate returns instance', () {
+      final inst = AppLogger.testCreate();
+      expect(inst, isA<AppLogger>());
     });
   });
 }

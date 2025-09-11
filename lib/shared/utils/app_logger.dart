@@ -14,6 +14,9 @@ import 'package:flutter/foundation.dart';
 class AppLogger {
   AppLogger._();
 
+  @visibleForTesting
+  static AppLogger testCreate() => AppLogger._();
+
   static bool _initialized = false;
 
   /// Initialize global error handlers. Safe to call multiple times; only first is applied.
