@@ -15,9 +15,14 @@ void main() {
   const goldenSize = Size(400, 400);
   final controller = SignupControllerMock.register();
 
-  test('constructor can be instantiated (const)', () {
-    const widget = SignupFormWidget(key: ValueKey('signup-form'));
-    expect(widget.key, const ValueKey('signup-form'));
+  testWidgets('constructor executed via pump (non-const)', (tester) async {
+    await tester.pumpWidget(localizedTestApp(
+      BlocProvider<SignupController>(
+        create: (_) => controller,
+        child: SignupFormWidget(key: UniqueKey()),
+      ),
+    ));
+    expect(find.byType(SignupFormWidget), findsOneWidget);
   });
 
   Widget widgetBuilder() => localizedTestApp(
