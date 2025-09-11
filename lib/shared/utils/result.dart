@@ -9,12 +9,10 @@ sealed class Result<E, T> {
   R fold<R>({
     required R Function(E e) failure,
     required R Function(T v) success,
-  }) {
-    final self = this;
-    if (self is Success<E, T>) return success(self.value);
-    if (self is Failure<E, T>) return failure(self.error);
-    throw StateError('Unknown Result subtype');
-  }
+  }) => switch (this) {
+        Success(:final value) => success(value),
+        Failure(:final error) => failure(error),
+      };
 
   Result<E, R> map<R>(R Function(T v) transform) => switch (this) {
     Success(:final value) => Success<E, R>(transform(value)),

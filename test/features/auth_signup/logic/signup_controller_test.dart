@@ -1,19 +1,20 @@
 import 'dart:async';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
+
+import 'package:ariokan_index/entities/user/user.dart';
 import 'package:ariokan_index/features/auth_signup/logic/signup_controller.dart';
 import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
-import 'package:ariokan_index/entities/user/user_repository.dart';
 import 'package:ariokan_index/shared/utils/result.dart';
-import 'package:ariokan_index/entities/user/user.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+import '../../../entities/user/mocks/user_repository_mock.dart';
 
 void main() {
   group('SignupController', () {
-    late MockUserRepository mockRepo;
+    final mockRepo = UserRepositoryMock.register();
     late SignupController controller;
 
     setUp(() {
-      mockRepo = MockUserRepository();
       controller = SignupController(mockRepo);
     });
 
@@ -159,7 +160,56 @@ void main() {
       expect(controller.state.status, SignupStatus.error);
       expect(controller.state.error?.code, SignupErrorCode.networkFailure);
     });
+
+    test('invalid username triggers early error and no repo call', () async {
+      controller
+        ..updateUsername('')
+        ..updateEmail('valid@example.com')
+        ..updatePassword('validpass');
+      await controller.submit();
+      expect(controller.state.status, SignupStatus.error);
+      expect(controller.state.error?.code, SignupErrorCode.usernameInvalid);
+      verifyNever(
+        () => mockRepo.createUserWithUsername(
+          username: any(named: 'username'),
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      );
+    });
+
+    test('invalid email triggers early error and no repo call', () async {
+      controller
+        ..updateUsername('user')
+        ..updateEmail('bad-email')
+        ..updatePassword('validpass');
+      await controller.submit();
+      expect(controller.state.status, SignupStatus.error);
+      expect(controller.state.error?.code, SignupErrorCode.emailInvalid);
+      verifyNever(
+        () => mockRepo.createUserWithUsername(
+          username: any(named: 'username'),
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      );
+    });
+
+    test('invalid password triggers early error and no repo call', () async {
+      controller
+        ..updateUsername('user')
+        ..updateEmail('user@example.com')
+        ..updatePassword('123');
+      await controller.submit();
+      expect(controller.state.status, SignupStatus.error);
+      expect(controller.state.error?.code, SignupErrorCode.passwordWeak);
+      verifyNever(
+        () => mockRepo.createUserWithUsername(
+          username: any(named: 'username'),
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      );
+    });
   });
 }
-
-class MockUserRepository extends Mock implements UserRepository {}
