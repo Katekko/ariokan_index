@@ -28,8 +28,10 @@ sealed class Result<E, T> {
 }
 
 class Success<E, T> extends Result<E, T> {
-  final T value;
   const Success(this.value);
+
+  final T value;
+
   @override
   String toString() => 'Success($value)';
   @override
@@ -40,8 +42,10 @@ class Success<E, T> extends Result<E, T> {
 }
 
 class Failure<E, T> extends Result<E, T> {
-  final E error;
   const Failure(this.error);
+
+  final E error;
+
   @override
   String toString() => 'Failure($error)';
   @override

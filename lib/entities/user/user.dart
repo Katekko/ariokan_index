@@ -8,6 +8,14 @@ class User extends Equatable {
     required this.email,
     required this.createdAt,
   });
+
+  factory User.fromMap(Map<String, Object?> map) => User(
+    id: map['id'] as String,
+    username: map['username'] as String,
+    email: map['email'] as String,
+    createdAt: DateTime.parse(map['createdAt'] as String),
+  );
+
   final String id;
   final String username; // immutable unique handle
   final String email;
@@ -31,13 +39,6 @@ class User extends Equatable {
     'email': email,
     'createdAt': createdAt.toIso8601String(),
   };
-
-  factory User.fromMap(Map<String, Object?> map) => User(
-    id: map['id'] as String,
-    username: map['username'] as String,
-    email: map['email'] as String,
-    createdAt: DateTime.parse(map['createdAt'] as String),
-  );
 
   @override
   String toString() => 'User(id: $id, username: $username, email: $email)';
