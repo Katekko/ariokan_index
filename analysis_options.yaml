@@ -1,0 +1,6 @@
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    - sort_constructors_first
+    - unnecessary_lambdas

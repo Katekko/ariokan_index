@@ -1,0 +1,20 @@
+{
+  "appTitle": "Ariokan Index",
+  "signup_title": "Create your account",
+  "signup_username_label": "Username",
+  "signup_email_label": "Email",
+  "signup_password_label": "Password",
+  "signup_submit": "Sign Up",
+  "signup_submit_done": "Done",
+  "signup_error_usernameTaken": "That username is already taken.",
+  "signup_error_usernameInvalid": "Please enter a valid username.",
+  "signup_error_emailInvalid": "Please enter a valid email address.",
+  "signup_error_passwordWeak": "Password is too weak.",
+  "signup_error_networkFailure": "Network issue, try again.",
+  "signup_error_rollbackFailed": "Account creation partially failed. Please contact support.",
+  "signup_error_unknown": "Something went wrong. Try again.",
+  "signup_field_error_username_required": "Username is required.",
+  "signup_field_error_email_required": "Email is required.",
+  "signup_field_error_password_required": "Password is required.",
+  "signup_error_emailAlreadyInUse": "This email is already in use. Try signing in instead."
+}

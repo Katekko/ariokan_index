@@ -39,13 +39,14 @@ Firestore security rules mirror repository invariants. Any repository relaxation
 ### A. Layer Responsibilities
 - app: Composition root (MaterialApp, routing, DI wiring)
 - processes: Long-lived or multi-step orchestrations (e.g., deck_publish_flow)
-- pages: Route widgets mapping URLs to feature assemblies
-- features: User-facing capability packages (small public surface)
+- features: Vertical slices (each owns its route/page widgets inside `ui/`)
 - entities: Domain models + repository interfaces and implementations
 - shared: Cross-cutting primitives (ui kit, firebase adapters, config, services, utils)
 
+Amendment (0.1.2): Removed dedicated `pages/` layer. Each feature hosts its own page (route entry widget) under `features/<feature>/ui/` (e.g., `signup_page.dart`, `widgets/` for smaller components, `*_page_setup.dart` for DI/providers). Rationale: 1:1 mapping between feature and page; reduces indirection and improves discoverability.
+
 ### B. Dependency Rules (Enforced)
-Allowed edges: pages→(features|entities|shared), features→(entities|shared), entities→shared, processes→(features|entities|shared). Forbidden: features→features, shared→(entities|features|pages|processes|app), entities→(features|pages|processes|app). Cycles are disallowed.
+Allowed edges: features→(entities|shared), entities→shared, processes→(features|entities|shared). Forbidden: features→features, shared→(entities|features|processes|app), entities→(features|processes|app). Cycles are disallowed. (Pages layer removed; feature pages count as feature UI.)
 
 ### C. Firestore Data Model (MVP)
 Collections: users/{uid}, usernames/{username}, tags/{tagId}, decks/{deckId}. No subcollections initially. Version evolution occurs via field version references or new deck documents (strategy TBD during implementation—must not break reader clients).
@@ -70,6 +71,24 @@ Optimize for correctness & clarity. Queries must specify limits (default 50 item
 
 ### J. Accessibility & UX Baseline
 Primary actions use `primary_button.dart`. Tag chips accessible with semantic labels. Forms validate on submit + dirty fields.
+
+### K. Code Style & Linting
+Baseline enforced via `analysis_options.yaml` including `package:flutter_lints/flutter.yaml` plus project-specific rules.
+
+Current mandatory rules (non-exhaustive; failures block merge):
+1. Constructors must appear before other members (`sort_constructors_first`). Rationale: Improves scan-ability—object creation contract visible first, supporting Core Principle 7 (Simplicity).
+2. File naming: snake_case; type names: PascalCase; members: lowerCamel (reiterated here for lint cross-reference).
+3. Future additions (planned): forbidden import lint script to enforce dependency direction (see Section B).
+
+Guidance:
+- When adding a new lint, update this section and provide a short rationale + reference to affected layers.
+- Do not disable a failing lint in-code unless a temporary TODO references an issue with expiration.
+- Ordering preference inside a class after constructors: static constants, factory constructors, named constructors, fields, getters, methods, private helpers last.
+
+Amendment Process for Lints:
+1. Prototype locally, run `dart analyze` ensuring no unrelated noise.
+2. Update this section + change log version.
+3. If rule impacts templates or examples, reflect changes there in same PR.
 
 ## Workflow & Quality Gates
 
@@ -119,6 +138,10 @@ Non-compliant contributions are refactored prior to merge; exceptions are tempor
 
 ## Versioning & Metadata
 
-**Version**: 0.1.0 | **Ratified**: 2025-09-09 | **Last Amended**: 2025-09-09
+**Version**: 0.1.3 | **Ratified**: 2025-09-09 | **Last Amended**: 2025-09-10
 
-Change Log (initial): Establishes core architectural, workflow, and quality principles for MVP.
+Change Log:
+- 0.1.3: Clarified feature-owned page widgets (synchronized README skeleton); added requirement to update README feature list upon merge of new slice.
+- 0.1.2: Removed standalone `pages/` layer; feature-local page pattern adopted.
+- 0.1.1: Added Section K (Code Style & Linting) and mandated constructor-first ordering lint.
+- 0.1.0: Initial establishment of core architectural, workflow, and quality principles for MVP.

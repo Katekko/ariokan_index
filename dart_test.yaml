@@ -1,0 +1,15 @@
+# Defines custom test tags used in this package.
+# Adding 'golden' tag to silence warnings and allow selecting golden tests.
+# You can run only golden tests with:
+#   flutter test --tags golden
+# Or exclude them with:
+#   flutter test --exclude-tags golden
+# Optionally add timeouts or presets per tag.
+# Reference: https://dart.dev/tools/test#tagging-tests
+
+tags:
+  golden:
+    # Extend default test timeout if golden updates are expensive (optional)
+    # timeout: 2x
+    # Add a description for clarity
+    description: Tests that produce or validate golden images.
