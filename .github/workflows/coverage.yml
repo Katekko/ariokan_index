@@ -1,0 +1,128 @@
+name: Test & Coverage
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  tests:
+    name: Flutter Tests & Coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java (for Android toolchain even if web only)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Cache Flutter SDK
+        id: flutter-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.fvm/versions/3.35.3
+          key: flutter-sdk-3.35.3
+
+      - name: Install FVM
+        if: steps.flutter-cache.outputs.cache-hit != 'true'
+        run: |
+          dart pub global activate fvm
+          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
+
+      - name: Install Flutter 3.35.3 via FVM (if not cached)
+        if: steps.flutter-cache.outputs.cache-hit != 'true'
+        run: |
+          fvm install 3.35.3
+
+      - name: Add FVM bin to PATH
+        run: |
+          echo "$HOME/.fvm/versions/3.35.3/bin" >> $GITHUB_PATH
+
+      - name: Flutter doctor (sanity)
+        run: flutter doctor -v
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Run Tests & Coverage
+        run: bash scripts/check-coverage.sh
+
+      - name: Post-process Diff Coverage
+        if: always()
+        id: diffcov
+        run: |
+          if [[ -f missing_coverage.md ]]; then
+            # Extract lines marked as missing (pattern depends on tool output). Fallback: lines containing 'MISSING TEST'
+            awk '/MISSING TEST/ {print}' missing_coverage.md > _uncovered.tmp || true
+            missing_count=$(wc -l < _uncovered.tmp | tr -d ' ')
+            echo "uncovered_lines=$missing_count" >> $GITHUB_OUTPUT
+            echo "First 50 uncovered lines (truncated):" > uncovered_preview.md
+            head -n 50 _uncovered.tmp >> uncovered_preview.md
+            # Decide failure: if file exists and has at least 1 uncovered line AND env ENFORCE_DIFF_COVERAGE != 'false'
+            if [[ ${missing_count} -gt 0 && "${ENFORCE_DIFF_COVERAGE:-true}" == "true" ]]; then
+              echo "fail_build=true" >> $GITHUB_OUTPUT
+            else
+              echo "fail_build=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "No missing_coverage.md produced" > uncovered_preview.md
+            echo "uncovered_lines=0" >> $GITHUB_OUTPUT
+            echo "fail_build=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload Coverage LCOV
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-lcov
+          path: coverage/lcov.info
+          if-no-files-found: warn
+
+      - name: Upload Missing Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: missing-coverage
+          path: missing_coverage.md
+          if-no-files-found: warn
+
+      - name: Upload Uncovered Preview
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: uncovered-preview
+          path: uncovered_preview.md
+          if-no-files-found: warn
+
+      - name: PR Comment (Diff Coverage Summary)
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            ${{ steps.diffcov.outputs.uncovered_lines == '0' && '✅' || '❌' }} Diff Coverage Report
+            Uncovered changed lines: ${{ steps.diffcov.outputs.uncovered_lines }}
+
+            Top (max 50) uncovered entries:
+
+            ```
+            ${{ steps.diffcov.outputs.uncovered_lines == '0' && 'None 🎉' || github.workspace }}
+            ```
+
+            Full details: see artifact missing-coverage / uncovered-preview.
+            Enforcement: ${{ steps.diffcov.outputs.fail_build == 'true' && 'Build will fail due to uncovered lines.' || 'Informational only (not failing).'}}
+          comment-tag: coverage-summary
+
+      - name: Fail if uncovered lines present
+        if: ${{ steps.diffcov.outputs.fail_build == 'true' }}
+        run: |
+          echo "Diff coverage enforcement triggered (uncovered lines: ${{ steps.diffcov.outputs.uncovered_lines }})" >&2
+          exit 1
