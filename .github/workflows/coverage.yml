@@ -19,6 +19,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Fetch main for diff
+        run: git fetch origin main --depth=1
+
+      - name: Install pull_request_coverage (Dart global)
+        run: |
+          dart pub global activate pull_request_coverage
+          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
+
       - name: Setup Java (for Android toolchain even if web only)
         uses: actions/setup-java@v4
         with:
@@ -38,6 +46,7 @@ jobs:
         run: flutter pub get
 
       - name: Run Tests & Coverage
+        id: run_tests
         run: bash scripts/check-coverage.sh
 
       - name: Post-process Diff Coverage
@@ -71,7 +80,7 @@ jobs:
           fi
 
       - name: Upload Coverage LCOV
-        if: always()
+        if: ${{ steps.run_tests.outcome == 'success' && steps.diffcov.outcome == 'success' }}
         uses: actions/upload-artifact@v4
         with:
           name: coverage-lcov
@@ -79,7 +88,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Upload Missing Coverage Report
-        if: always()
+        if: ${{ steps.run_tests.outcome == 'success' && steps.diffcov.outcome == 'success' }}
         uses: actions/upload-artifact@v4
         with:
           name: missing-coverage
@@ -87,7 +96,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Upload Uncovered Preview
-        if: always()
+        if: ${{ steps.run_tests.outcome == 'success' && steps.diffcov.outcome == 'success' }}
         uses: actions/upload-artifact@v4
         with:
           name: uncovered-preview
@@ -95,7 +104,7 @@ jobs:
           if-no-files-found: warn
 
       - name: PR Comment (Diff Coverage Summary)
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request' && steps.run_tests.outcome == 'success' && steps.diffcov.outcome == 'success' }}
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
