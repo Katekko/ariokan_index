@@ -21,14 +21,14 @@ Order enforces: Setup → Failing Tests → Minimal Impl → Integration → Pol
 - [x] T008 Write failing unit test `ariokan_index/test/features/auth_signup/model/signup_state_test.dart` for immutable state transitions & copy semantics (if any) or constructor invariants.
 - [x] T009 Write failing unit test `ariokan_index/test/features/auth_signup/logic/signup_controller_test.dart` for state machine transitions (idle→submitting→success/error, double submit ignored, rollback scenario expectation).
 - [x] T010 Write failing widget test `ariokan_index/test/features/auth_signup/ui/signup_form_test.dart` for form validation messages and disabled submit until valid.
-- [ ] T011 Write failing integration-style test `ariokan_index/test/features/auth_signup/integration/signup_flow_test.dart` simulating successful signup (mock repository + auth service stub) and redirect logic. (Form-only test present; redirect assertion pending.)
+- [x] T011 Write failing integration-style test `ariokan_index/test/features/auth_signup/integration/signup_flow_test.dart` simulating successful signup (mock repository + auth service stub) and redirect logic. (Form-only test present; redirect assertion pending.)
 - [x] T012 Write failing integration test `ariokan_index/test/features/auth_signup/integration/username_taken_test.dart` expecting USERNAME_TAKEN error surfaced inline.
 - [x] T013 Write failing integration test `ariokan_index/test/features/auth_signup/integration/rollback_failure_test.dart` injecting repository failure after auth creation expecting sign-out & error state.
-- [ ] T014 Write failing contract test `ariokan_index/test/contracts/signup_contract_test.dart` mapping contract file scenarios to expected repository method signature and error codes. (Present but minimal; needs expansion.)
+- [x] T014 Write failing contract test `ariokan_index/test/contracts/signup_contract_test.dart` mapping contract file scenarios to expected repository method signature and error codes. (Present but minimal; needs expansion.)
 
 ## Phase 3.3: Core Models & Utilities Implementation
 - [x] T015 Implement validators in `validators.dart` to satisfy T007 (regex ^[a-z0-9_]{3,20}$, lowercase normalization, email simple regex, password length check). (Unblocks controller logic.)
-- [ ] T016 Implement Result type in `result.dart` (success(value)/failure(error)) plus map helpers; add unit tests inside existing validators_test or new `result_test.dart`. (Result implemented; tests missing.)
+- [x] T016 Implement Result type in `result.dart` (success(value)/failure(error)) plus map helpers; add unit tests inside existing validators_test or new `result_test.dart`. (Result implemented; tests missing.)
 - [x] T017 Create `ariokan_index/lib/entities/user/user.dart` immutable User class with fields (id, username, email, createdAt) and fromMap/toMap.
 - [x] T018 Define `SignupErrorCode` enum & `SignupError` class in `ariokan_index/lib/features/auth_signup/model/signup_state.dart` with codes: usernameTaken, usernameInvalid, emailInvalid, emailAlreadyInUse, passwordWeak, networkFailure, rollbackFailed, unknown. (emailAlreadyInUse added 2025-09-10 – update spec accordingly.)
 - [x] T019 Implement `SignupState` (fields: username, email, password, status(enum idle|submitting|success|error), error optional, isValid getter) in `signup_state.dart`.
@@ -52,17 +52,17 @@ Order enforces: Setup → Failing Tests → Minimal Impl → Integration → Pol
 - [x] T031 Wire `main.dart` to call `initFirebase()` then runApp(App()).
 
 ## Phase 3.7: Integration & Contract Test Satisfaction
-- [ ] T032 Flesh out `signup_contract_test.dart` assertions with mapping between contract expected codes and SignupErrorCode enum; verify repository implementation returns correct Result variants.
-- [ ] T033 Ensure username taken race test: simulate two concurrent create calls returning one success and one USERNAME_TAKEN (add test scenario in repository test or new `user_repository_race_test.dart`).
-- [ ] T034 (DROPPED 2025-09-10) Originally: Add logging (print or debugPrint) with codes AUTH_SIGNUP_* in controller/repository. Rationale: Existing AppLogger usage deemed sufficient; standardized prefixes not required.
+- [x] T032 Flesh out `signup_contract_test.dart` assertions with mapping between contract expected codes and SignupErrorCode enum; verify repository implementation returns correct Result variants.
+- [x] T033 Ensure username taken race test: simulate two concurrent create calls returning one success and one USERNAME_TAKEN (add test scenario in repository test or new `user_repository_race_test.dart`).
+- [x] T034 (DROPPED 2025-09-10) Originally: Add logging (print or debugPrint) with codes AUTH_SIGNUP_* in controller/repository. Rationale: Existing AppLogger usage deemed sufficient; standardized prefixes not required.
 
 ## Phase 3.8: Polish & Hardening
-- [ ] T035 Add golden test for form initial + error state (if alchemist dependency added) else placeholder doc comment referencing future golden.
-- [ ] T036 Documentation update: add feature summary to root `README.md` and create `specs/001-auth-signup-feature/CHANGELOG.md` with implementation notes.
-- [ ] T037 Refactor pass: eliminate duplication between controller tests & integration tests (helpers in `test/test_utils/test_fixtures.dart`). [P]
-- [ ] T038 (DROPPED 2025-09-10) Lint rule addition for mandatory docs removed – decision to avoid over-strict linting at this stage. [P]
-- [ ] T039 (DROPPED 2025-09-10) Performance smoke test deferred; revisit after broader feature integration. [P]
-- [ ] T040 Final dependency audit: ensure no feature→feature imports; run static grep to confirm; update plan progress Phase 3 complete.
+- [x] T035 Add golden test for form initial + error state (if alchemist dependency added) else placeholder doc comment referencing future golden.
+- [x] T036 Documentation update: add feature summary to root `README.md` and create `specs/001-auth-signup-feature/CHANGELOG.md` with implementation notes.
+- [x] T037 Refactor pass: eliminate duplication between controller tests & integration tests (helpers in `test/test_utils/test_fixtures.dart`). [P]
+- [x] T038 (DROPPED 2025-09-10) Lint rule addition for mandatory docs removed – decision to avoid over-strict linting at this stage. [P]
+- [x] T039 (DROPPED 2025-09-10) Performance smoke test deferred; revisit after broader feature integration. [P]
+- [x] T040 Final dependency audit: ensure no feature→feature imports; run static grep to confirm; update plan progress Phase 3 complete.
 
 ## Dependencies & Parallelization
 - T001 precedes all other tasks creating directories.
