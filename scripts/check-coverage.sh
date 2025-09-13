@@ -57,7 +57,8 @@ if command -v pull_request_coverage >/dev/null 2>&1; then
     if [ -f missing_coverage.md ]; then
       info "Diff coverage below threshold (${MIN_DIFF_COVERAGE}%). See missing_coverage.md"
     else
-      info "Tool reported failure but no uncovered markers were produced."
+      error "Diff coverage tool failed unexpectedly (no missing_coverage.md). Failing build.";
+      exit 1
     fi
   else
     if [ -f missing_coverage.md ]; then
