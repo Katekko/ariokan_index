@@ -22,11 +22,6 @@ jobs:
       - name: Fetch main for diff
         run: git fetch origin main --depth=1
 
-      - name: Install pull_request_coverage (Dart global)
-        run: |
-          dart pub global activate pull_request_coverage
-          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
-
       - name: Setup Java (for Android toolchain even if web only)
         uses: actions/setup-java@v4
         with:
@@ -38,6 +33,11 @@ jobs:
         with:
           flutter-version: '3.35.3'
           cache: true
+
+      - name: Install pull_request_coverage (Dart global)
+        run: |
+          dart pub global activate pull_request_coverage
+          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
 
       - name: Flutter doctor (sanity)
         run: flutter doctor -v
