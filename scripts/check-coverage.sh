@@ -36,24 +36,36 @@ if command -v pull_request_coverage >/dev/null 2>&1; then
 
   # We want to always write a markdown file even on failure, without aborting script earlier.
   set +e
+  tmp_report=$(mktemp)
   git diff origin/main | pull_request_coverage \
     --minimum-coverage "${MIN_DIFF_COVERAGE}" \
     --report-fully-covered-files false \
     --output-mode markdown \
     --markdown-mode dart \
     --fully-tested-message "All covered" \
-    > missing_coverage.md
+    > "${tmp_report}"
   pr_cov_exit=$?
+  # Only persist file if it actually contains uncovered markers
+  if grep -q "MISSING TEST" "${tmp_report}" 2>/dev/null; then
+    mv "${tmp_report}" missing_coverage.md
+  else
+    rm -f "${tmp_report}" || true
+  fi
   set -e
 
   if [ $pr_cov_exit -ne 0 ]; then
-    if grep -q "MISSING TEST" missing_coverage.md 2>/dev/null; then
+    if [ -f missing_coverage.md ]; then
       info "Diff coverage below threshold (${MIN_DIFF_COVERAGE}%). See missing_coverage.md"
     else
-      info "Tool likely failed (not just low coverage). Contents of missing_coverage.md may be incomplete."
+      error "Diff coverage tool failed unexpectedly (no missing_coverage.md). Failing build.";
+      exit 1
     fi
   else
-    success "missing_coverage.md written"
+    if [ -f missing_coverage.md ]; then
+      success "missing_coverage.md written (uncovered lines present)"
+    else
+      success "All new/changed lines covered; no missing_coverage.md generated."
+    fi
   fi
 else
   warn "pull_request_coverage tool not found in PATH. Skipping diff coverage markdown."

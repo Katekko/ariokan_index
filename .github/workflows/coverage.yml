@@ -1,0 +1,97 @@
+name: Test & Coverage
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  tests:
+    name: Flutter Tests & Coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch main for diff
+        run: git fetch origin main --depth=1
+
+      - name: Setup Java (for Android toolchain even if web only)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.3'
+          cache: true
+
+      - name: Install pull_request_coverage (Dart global)
+        run: |
+          dart pub global activate pull_request_coverage
+          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
+
+      - name: Flutter doctor (sanity)
+        run: flutter doctor -v
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Run Tests & Coverage
+        id: run_tests
+        run: bash scripts/check-coverage.sh
+
+      - name: Post-process Diff Coverage
+        if: always()
+        id: diffcov
+        run: |
+          if [[ -f missing_coverage.md ]]; then
+            # Extract lines marked as missing (pattern depends on tool output). Fallback: lines containing 'MISSING TEST'
+            awk '/MISSING TEST/ {print}' missing_coverage.md > _uncovered.tmp || true
+            missing_count=$(wc -l < _uncovered.tmp | tr -d ' ')
+            echo "uncovered_lines=$missing_count" >> $GITHUB_OUTPUT
+            # Decide failure: if file exists and has at least 1 uncovered line AND env ENFORCE_DIFF_COVERAGE != 'false'
+            if [[ ${missing_count} -gt 0 && "${ENFORCE_DIFF_COVERAGE:-true}" == "true" ]]; then
+              echo "fail_build=true" >> $GITHUB_OUTPUT
+            else
+              echo "fail_build=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            # No file means all changed lines covered (script now only emits file when uncovered lines exist)
+            echo "uncovered_lines=0" >> $GITHUB_OUTPUT
+            echo "fail_build=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload Missing Coverage Report
+        if: ${{ steps.run_tests.outcome == 'success' && steps.diffcov.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: missing-coverage
+          path: missing_coverage.md
+          if-no-files-found: warn
+
+      - name: PR Comment (Diff Coverage Summary)
+        if: ${{ github.event_name == 'pull_request' && steps.run_tests.outcome == 'success' && steps.diffcov.outcome == 'success' }}
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            ${{ steps.diffcov.outputs.uncovered_lines == '0' && '✅' || '❌' }} Diff Coverage Report
+            Uncovered changed lines: ${{ steps.diffcov.outputs.uncovered_lines }}
+
+            Full details (if any): missing-coverage artifact.
+            Enforcement: ${{ steps.diffcov.outputs.fail_build == 'true' && 'Build will fail due to uncovered lines.' || 'Informational only (not failing).'}}
+          comment_tag: coverage-summary
+
+      - name: Fail if uncovered lines present
+        if: ${{ steps.diffcov.outputs.fail_build == 'true' }}
+        run: |
+          echo "Diff coverage enforcement triggered (uncovered lines: ${{ steps.diffcov.outputs.uncovered_lines }})" >&2
+          exit 1
