@@ -5,6 +5,7 @@ import 'package:ariokan_index/app/app.dart';
 import 'package:ariokan_index/app/di/di.dart';
 
 Future<void> main() async {
+  // Testing github actions
   AppLogger.init();
   AppLogger.runGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
