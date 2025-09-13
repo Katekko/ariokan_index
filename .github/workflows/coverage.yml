@@ -58,8 +58,6 @@ jobs:
             awk '/MISSING TEST/ {print}' missing_coverage.md > _uncovered.tmp || true
             missing_count=$(wc -l < _uncovered.tmp | tr -d ' ')
             echo "uncovered_lines=$missing_count" >> $GITHUB_OUTPUT
-            echo "First 50 uncovered lines (truncated):" > uncovered_preview.md
-            head -n 50 _uncovered.tmp >> uncovered_preview.md
             # Decide failure: if file exists and has at least 1 uncovered line AND env ENFORCE_DIFF_COVERAGE != 'false'
             if [[ ${missing_count} -gt 0 && "${ENFORCE_DIFF_COVERAGE:-true}" == "true" ]]; then
               echo "fail_build=true" >> $GITHUB_OUTPUT
@@ -79,28 +77,12 @@ jobs:
             echo "missing_coverage.md generation failed" > missing_coverage.md
           fi
 
-      - name: Upload Coverage LCOV
-        if: ${{ steps.run_tests.outcome == 'success' && steps.diffcov.outcome == 'success' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-lcov
-          path: coverage/lcov.info
-          if-no-files-found: warn
-
       - name: Upload Missing Coverage Report
         if: ${{ steps.run_tests.outcome == 'success' && steps.diffcov.outcome == 'success' }}
         uses: actions/upload-artifact@v4
         with:
           name: missing-coverage
           path: missing_coverage.md
-          if-no-files-found: warn
-
-      - name: Upload Uncovered Preview
-        if: ${{ steps.run_tests.outcome == 'success' && steps.diffcov.outcome == 'success' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: uncovered-preview
-          path: uncovered_preview.md
           if-no-files-found: warn
 
       - name: PR Comment (Diff Coverage Summary)
@@ -111,13 +93,7 @@ jobs:
             ${{ steps.diffcov.outputs.uncovered_lines == '0' && '✅' || '❌' }} Diff Coverage Report
             Uncovered changed lines: ${{ steps.diffcov.outputs.uncovered_lines }}
 
-            Top (max 50) uncovered entries:
-
-            ```
-            ${{ steps.diffcov.outputs.uncovered_lines == '0' && 'None 🎉' || github.workspace }}
-            ```
-
-            Full details: see artifact missing-coverage / uncovered-preview.
+            Full details (if any): missing-coverage artifact.
             Enforcement: ${{ steps.diffcov.outputs.fail_build == 'true' && 'Build will fail due to uncovered lines.' || 'Informational only (not failing).'}}
           comment_tag: coverage-summary
 
