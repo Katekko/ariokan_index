@@ -25,27 +25,11 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Cache Flutter SDK
-        id: flutter-cache
-        uses: actions/cache@v4
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
-          path: ~/.fvm/versions/3.35.3
-          key: flutter-sdk-3.35.3
-
-      - name: Install FVM
-        if: steps.flutter-cache.outputs.cache-hit != 'true'
-        run: |
-          dart pub global activate fvm
-          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
-
-      - name: Install Flutter 3.35.3 via FVM (if not cached)
-        if: steps.flutter-cache.outputs.cache-hit != 'true'
-        run: |
-          fvm install 3.35.3
-
-      - name: Add FVM bin to PATH
-        run: |
-          echo "$HOME/.fvm/versions/3.35.3/bin" >> $GITHUB_PATH
+          flutter-version: '3.35.3'
+          cache: true
 
       - name: Flutter doctor (sanity)
         run: flutter doctor -v
