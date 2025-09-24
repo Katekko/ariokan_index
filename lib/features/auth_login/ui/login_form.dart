@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../logic/login_controller.dart';
 import '../model/login_state.dart';
 import 'package:ariokan_index/l10n/app_localizations.dart';
+import 'package:ariokan_index/app/di/di.dart';
 
 class LoginForm extends StatelessWidget {
   const LoginForm({super.key});
@@ -12,7 +13,7 @@ class LoginForm extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return BlocProvider(
-      create: (_) => LoginController(),
+      create: (_) => di<LoginController>(),
       child: BlocBuilder<LoginController, LoginState>(
         builder: (context, state) {
           final controller = context.read<LoginController>();

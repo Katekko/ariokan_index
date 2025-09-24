@@ -1,9 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../model/login_state.dart';
+
 import 'package:ariokan_index/shared/utils/app_logger.dart';
+import 'package:ariokan_index/shared/services/auth_service.dart';
 
 class LoginController extends Cubit<LoginState> {
-  LoginController() : super(const LoginState());
+  LoginController(this._authService) : super(const LoginState());
+
+  final AuthService _authService;
 
   void setUsername(String username) {
     emit(state.copyWith(username: username));
@@ -22,36 +26,29 @@ class LoginController extends Cubit<LoginState> {
       'username: ${username.isNotEmpty ? "${username[0]}***" : ""}',
     );
     emit(state.copyWith(status: LoginStatus.submitting, errorType: null));
-    await Future.delayed(const Duration(milliseconds: 100)); // Simulate async
-    // TODO: Integrate with AuthService and error mapping
-    if (password == 'pass') {
+    try {
+      await _authService.signInWithUsernamePassword(username, password);
       AppLogger.info(
         'submit_success',
         'username: ${username.isNotEmpty ? "${username[0]}***" : ""}',
       );
       emit(state.copyWith(status: LoginStatus.success));
-    } else if (password == 'netfail') {
+    } on Exception catch (e) {
+      // Map error type
+      final errorType = _mapErrorType(e);
       AppLogger.info(
-        'submit_failure_network',
+        'submit_failure_${errorType == LoginErrorType.network ? 'network' : 'auth'}',
         'username: ${username.isNotEmpty ? "${username[0]}***" : ""}',
       );
-      emit(
-        state.copyWith(
-          status: LoginStatus.failure,
-          errorType: LoginErrorType.network,
-        ),
-      );
-    } else {
-      AppLogger.info(
-        'submit_failure_auth',
-        'username: ${username.isNotEmpty ? "${username[0]}***" : ""}',
-      );
-      emit(
-        state.copyWith(
-          status: LoginStatus.failure,
-          errorType: LoginErrorType.auth,
-        ),
-      );
+      emit(state.copyWith(status: LoginStatus.failure, errorType: errorType));
     }
+  }
+
+  LoginErrorType _mapErrorType(Object e) {
+    final msg = e.toString().toLowerCase();
+    if (msg.contains('network') || msg.contains('timeout')) {
+      return LoginErrorType.network;
+    }
+    return LoginErrorType.auth;
   }
 }
