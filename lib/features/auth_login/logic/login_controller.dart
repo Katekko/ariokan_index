@@ -19,7 +19,7 @@ class LoginController extends Cubit<LoginState> {
   }) async {
     AppLogger.info(
       'submit_start',
-      'username: ${username.isNotEmpty ? username[0] + "***" : ""}',
+      'username: ${username.isNotEmpty ? "${username[0]}***" : ""}',
     );
     emit(state.copyWith(status: LoginStatus.submitting, errorType: null));
     await Future.delayed(const Duration(milliseconds: 100)); // Simulate async
@@ -27,13 +27,13 @@ class LoginController extends Cubit<LoginState> {
     if (password == 'pass') {
       AppLogger.info(
         'submit_success',
-        'username: ${username.isNotEmpty ? username[0] + "***" : ""}',
+        'username: ${username.isNotEmpty ? "${username[0]}***" : ""}',
       );
       emit(state.copyWith(status: LoginStatus.success));
     } else if (password == 'netfail') {
       AppLogger.info(
         'submit_failure_network',
-        'username: ${username.isNotEmpty ? username[0] + "***" : ""}',
+        'username: ${username.isNotEmpty ? "${username[0]}***" : ""}',
       );
       emit(
         state.copyWith(
@@ -44,7 +44,7 @@ class LoginController extends Cubit<LoginState> {
     } else {
       AppLogger.info(
         'submit_failure_auth',
-        'username: ${username.isNotEmpty ? username[0] + "***" : ""}',
+        'username: ${username.isNotEmpty ? "${username[0]}***" : ""}',
       );
       emit(
         state.copyWith(

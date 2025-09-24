@@ -1,14 +1,10 @@
 import 'package:equatable/equatable.dart';
 
 enum LoginStatus { idle, submitting, success, failure }
+
 enum LoginErrorType { auth, network }
 
 class LoginState extends Equatable {
-  final String username;
-  final String password;
-  final LoginStatus status;
-  final LoginErrorType? errorType;
-
   const LoginState({
     this.username = '',
     this.password = '',
@@ -16,8 +12,14 @@ class LoginState extends Equatable {
     this.errorType,
   });
 
+  final String username;
+  final String password;
+  final LoginStatus status;
+  final LoginErrorType? errorType;
+
   bool get isLoading => status == LoginStatus.submitting;
-  bool get canSubmit => username.trim().isNotEmpty && password.isNotEmpty && !isLoading;
+  bool get canSubmit =>
+      username.trim().isNotEmpty && password.isNotEmpty && !isLoading;
 
   LoginState copyWith({
     String? username,
