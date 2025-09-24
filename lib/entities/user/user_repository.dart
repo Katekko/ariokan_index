@@ -9,11 +9,4 @@ abstract class UserRepository {
     required String email,
     required String password,
   });
-
-  /// Logs a user in, returning uid/token string on success.
-  /// Throws typed login exceptions (see login_exceptions.dart) for failures.
-  Future<String> loginWithUsername({
-    required String username,
-    required String password,
-  });
 }

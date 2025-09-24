@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'auth_service.dart';
 
-/// FirebaseAuthService concrete implementation (T025) extracted.
 class FirebaseAuthService implements AuthService {
   FirebaseAuthService({fb.FirebaseAuth? auth})
     : _auth = auth ?? fb.FirebaseAuth.instance;
