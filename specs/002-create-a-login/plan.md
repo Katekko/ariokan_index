@@ -31,11 +31,11 @@
 ## Summary
 Primary requirement: Provide a username + password login screen that authenticates users, persists session until logout/cache clear, routes to Decks screen, distinguishes network errors from credential failures, and offers a secondary sign-up navigation. Exclusions: password recovery, brute-force mitigation, accessibility enhancements, performance targets.
 
-High-level approach (aligned with existing architecture): Implement a new feature slice `auth_login` under `features/auth_login/` with `ui/login_page.dart`, `ui/widgets/login_form.dart`, state model `model/login_state.dart`, and controller `logic/login_controller.dart` using Cubit pattern similar to signup implementation. It will depend on an existing or extended `AuthService` (under `shared/services/auth_service.dart`) and potentially `UserRepository` for session retrieval. Session persistence uses existing Firebase Auth (assumed) and local persistence semantics already established by signup flow.
+High-level approach (aligned with existing architecture): Implement a new feature slice `auth_login` under `features/auth_login/` with `ui/login_page.dart`, `ui/widgets/login_form.dart`, state model `model/login_state.dart`, and controller `logic/login_controller.dart` (controller pattern, similar to signup implementation). It will depend on an existing or extended `AuthService` (under `shared/services/auth_service.dart`) and potentially `UserRepository` for session retrieval. Session persistence uses existing Firebase Auth (assumed) and local persistence semantics already established by signup flow.
 
 ## Technical Context
 **Language/Version**: Dart (Flutter stable per project)  
-**Primary Dependencies**: Flutter, Firebase Auth (implied by existing signup references / firebase options), Provider/Bloc (Cubit pattern), shared `AuthService` & `AppLogger`  
+**Primary Dependencies**: Flutter, Firebase Auth (implied by existing signup references / firebase options), Provider/Bloc (controller pattern), shared `AuthService` & `AppLogger`  
 **Storage**: Firebase Auth (credentials/session), Firestore (user profiles)  
 **Testing**: flutter_test, widget tests, potential goldens, repository/controller unit tests  
 **Target Platform**: Flutter Web (primary), adaptable to other Flutter targets  

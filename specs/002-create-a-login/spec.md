@@ -67,14 +67,13 @@ As a prospective or returning user, I want to access my personal account area by
 ### Edge Cases
 - User submits with one or more required fields empty → Show validation feedback and block submission.
 - User submits credentials with leading/trailing spaces → System trims whitespace before validation.
-- Network connectivity lost during submission → Show distinct network error (not the generic auth failure message) with a retry path.
+- Network connectivity lost during submission → Show the message "Network error. Please check your connection and try again." (distinct from the generic auth failure message) with a retry path.
 - Reopening app after successful prior login (session not cleared) → Skip login and go directly to Decks screen.
 - Attempted automated rapid submissions → No lockout; all attempts processed (noting potential future security enhancement).
 - Accessibility considerations deferred in scope (explicitly excluded for this iteration; to be scheduled later).
 
 ## Requirements *(mandatory)*
 
-### Functional Requirements
 - **FR-001**: System MUST present a dedicated login screen to unauthenticated users attempting to access protected areas.
 - **FR-002**: System MUST allow users to input a username and password (email, phone, and other identifiers are out of scope).
 - **FR-003**: System MUST locally validate that username and password fields are not empty before enabling submission.
@@ -86,10 +85,10 @@ As a prospective or returning user, I want to access my personal account area by
 - **FR-009**: System MUST route successful authentication directly to the Decks screen.
 - **FR-010**: System MUST persist the authenticated session until explicit logout or local cache/session data is cleared (no automatic timeout in this iteration).
 - **FR-011**: System MUST bypass the login screen on app relaunch if a valid session exists.
-- **FR-012**: System MUST distinguish network errors from authentication failures with a different message (e.g., network error message not finalized here but distinct from generic auth failure).
+- **FR-012**: System MUST distinguish network errors from authentication failures by displaying the message "Network error. Please check your connection and try again." for network errors, and "Username or password wrong" for authentication failures.
 - **FR-013**: System MUST provide a secondary-action control to navigate to the sign-up screen.
 - **FR-014**: System MUST not include password recovery or reset options (explicitly excluded).
-- **FR-015**: System MUST log (in development logs) each authentication attempt outcome (success/failure) without retention guarantees beyond current development environment.
+- **FR-015**: System MUST log (in development logs only) each authentication attempt outcome (success/failure). Logs are retained only for the duration of the development session and are not persisted or transmitted in production.
 - **FR-016**: System MUST allow unlimited authentication attempts (no lockout, rate limiting, or CAPTCHA in this iteration).
 - **FR-017**: System MUST NOT expose which part (username vs password) was incorrect in failure messaging.
 - **FR-018**: System MUST allow manual logout (logout function assumed outside scope of this screen but necessary for session reset reference).
