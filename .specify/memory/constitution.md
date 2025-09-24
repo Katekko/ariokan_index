@@ -1,50 +1,48 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+
+<!--
+Sync Impact Report
+Version change: (template) → 1.0.0
+Modified principles: All placeholders replaced with concrete project rules
+Added sections: All (first formalization)
+Removed sections: None
+Templates requiring updates: ✅ plan-template.md, ✅ spec-template.md, ✅ tasks-template.md (all reviewed, no changes needed)
+Follow-up TODOs: None
+-->
+
+# Ariokan Deck Portal (MVP) Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### I. Feature-Sliced Architecture
+All business capabilities are implemented as vertical slices (features) that own their UI, state, and domain adapters. Slices must not cross-reference each other directly; shared abstractions are centralized.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### II. Layered Dependency Rules
+Higher layers may depend only on the same or inner layers. Features must not import each other directly; entities depend only on shared; shared depends only on platform/packages. Dependency direction is strictly enforced.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### III. Immutability & Data Integrity
+Core domain fields (e.g., deck identity, username) are immutable after creation. This is enforced at both repository and Firestore security rules layers. All data mutations must be validated and reversible.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### IV. Test-First & Coverage Discipline
+All domain logic and validators require unit tests. Golden/widget tests are required for critical UI. No implementation may proceed before failing tests are written. PRs must not reduce test coverage for changed lines.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### V. Observability & Logging
+Structured logging is required for all significant user and system actions. The AppLogger utility must be used for all logs. No secrets or sensitive data may be logged. Logs must use stable event identifiers and be sanitized.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+## Technology & Compliance Constraints
+
+The project is implemented using Flutter Web and Firebase (Firestore). All configuration is managed via .env-style variables (using --dart-define for Flutter). No Firestore subcollections are used for MVP. All data access and mutation must comply with Firestore security rules. Only platform and package dependencies are allowed in shared code.
+
+
+## Development Workflow & Quality Gates
+
+All new features follow a spec → tasks → branch workflow. Failing tests must be written before implementation. PRs must reference the relevant spec and tasks, and reviewers must verify compliance with this constitution. Linting, commit message style, and review gates are enforced as described in CONTRIBUTING.md. Breaking changes require migration notes and security review if Firestore invariants are affected.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution supersedes all other practices. Amendments require documentation, approval, and a migration plan. All PRs and reviews must verify compliance with these principles. Versioning follows semantic rules: MAJOR for breaking/removal, MINOR for new/expanded principles, PATCH for clarifications. Compliance reviews are required for all architectural or contract changes.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2025-09-24 | **Last Amended**: 2025-09-24
+<!-- Version: 1.0.0 | Ratified: 2025-09-24 | Last Amended: 2025-09-24 -->
