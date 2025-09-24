@@ -145,4 +145,16 @@ class UserRepositoryFirebase extends UserRepository {
         return SignupError(SignupErrorCode.unknown, message: e.code);
     }
   }
+
+  // Login implementation (placeholder, T0XX future task) bridging Firebase to domain.
+  @override
+  Future<String> loginWithUsername({
+    required String username,
+    required String password,
+  }) async {
+    // Will need a mapping from username -> email (lookup usernames/{username}.email or user doc),
+    // fetch associated email then perform signInWithEmailAndPassword.
+    // For now raise to surface unimplemented path in tests if accidentally invoked.
+    throw UnimplementedError('loginWithUsername not implemented yet');
+  }
 }

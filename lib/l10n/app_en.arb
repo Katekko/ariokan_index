@@ -17,4 +17,8 @@
   "signup_field_error_email_required": "Email is required.",
   "signup_field_error_password_required": "Password is required.",
   "signup_error_emailAlreadyInUse": "This email is already in use. Try signing in instead."
+  ,"login.error.auth": "Invalid credentials."
+  ,"login.error.network": "Network error. Please retry."
+  ,"login.action.signup": "Need an account? Sign up"
+  ,"login.action.submit": "Login"
 }
