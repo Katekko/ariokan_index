@@ -5,7 +5,8 @@ import 'package:ariokan_index/app/di/di.dart';
 import 'package:ariokan_index/features/auth_login/logic/login_controller.dart';
 import 'package:ariokan_index/features/auth_login/model/login_state.dart';
 
-class LoginControllerMock extends MockCubit<LoginState> implements LoginController {
+class LoginControllerMock extends MockCubit<LoginState>
+    implements LoginController {
   LoginControllerMock._();
 
   static LoginControllerMock register() {
@@ -13,9 +14,15 @@ class LoginControllerMock extends MockCubit<LoginState> implements LoginControll
     setUpAll(() => di.registerFactory<LoginController>(() => mock));
     setUp(() {
       // Stub intent methods
+      when(mock.close).thenAnswer((_) => Future.value(null));
       when(() => mock.setUsername(any())).thenReturn(null);
       when(() => mock.setPassword(any())).thenReturn(null);
-      when(() => mock.submit(username: any(named: 'username'), password: any(named: 'password'))).thenAnswer((_) async {});
+      when(
+        () => mock.submit(
+          username: any(named: 'username'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) async {});
       // Deterministic initial state
       whenListen<LoginState>(
         mock,

@@ -8,7 +8,9 @@ class AuthServiceMock extends Mock implements AuthService {
 
   static AuthServiceMock register() {
     final mock = AuthServiceMock._();
+
     setUpAll(() => di.registerFactory<AuthService>(() => mock));
+
     setUp(() {
       // Provide benign defaults for all methods
       when(

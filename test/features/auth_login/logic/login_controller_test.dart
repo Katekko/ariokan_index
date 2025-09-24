@@ -10,6 +10,17 @@ void main() {
   final mockAuth = AuthServiceMock.register();
 
   group('LoginController', () {
+    test('setUsername updates the username in state', () {
+      final controller = LoginController(mockAuth);
+      controller.setUsername('newuser');
+      expect(controller.state.username, 'newuser');
+    });
+
+    test('setPassword updates the password in state', () {
+      final controller = LoginController(mockAuth);
+      controller.setPassword('newpass');
+      expect(controller.state.password, 'newpass');
+    });
     test('initial state is idle', () {
       final controller = LoginController(mockAuth);
       expect(controller.state.status, LoginStatus.idle);
