@@ -18,5 +18,8 @@
   "signup_field_error_password_required": "Password is required.",
   "signup_error_emailAlreadyInUse": "This email is already in use. Try signing in instead.",
   "login_error_auth": "Username or password wrong",
-  "login_error_network": "Network error. Please try again."
+  "login_error_network": "Network error. Please try again.",
+  "login_button": "Login",
+  "login_title": "Login",
+  "login_signup": "Sign Up"
 }

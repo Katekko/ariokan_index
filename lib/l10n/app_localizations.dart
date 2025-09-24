@@ -212,6 +212,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Network error. Please try again.'**
   String get login_error_network;
+
+  /// No description provided for @login_button.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get login_button;
+
+  /// No description provided for @login_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get login_title;
+
+  /// No description provided for @login_signup.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get login_signup;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

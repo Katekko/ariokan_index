@@ -67,4 +67,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get login_error_network => 'Network error. Please try again.';
+
+  @override
+  String get login_button => 'Login';
+
+  @override
+  String get login_title => 'Login';
+
+  @override
+  String get login_signup => 'Sign Up';
 }

@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../logic/login_controller.dart';
 import '../model/login_state.dart';
+import 'package:ariokan_index/l10n/app_localizations.dart';
 
 class LoginForm extends StatelessWidget {
   const LoginForm({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return BlocProvider(
       create: (_) => LoginController(),
       child: BlocBuilder<LoginController, LoginState>(
@@ -21,13 +24,17 @@ class LoginForm extends StatelessWidget {
                 TextField(
                   key: const Key('username'),
                   onChanged: controller.setUsername,
-                  decoration: const InputDecoration(labelText: 'Username'),
+                  decoration: InputDecoration(
+                    labelText: l10n.signup_username_label,
+                  ),
                 ),
                 TextField(
                   key: const Key('password'),
                   onChanged: controller.setPassword,
                   obscureText: true,
-                  decoration: const InputDecoration(labelText: 'Password'),
+                  decoration: InputDecoration(
+                    labelText: l10n.signup_password_label,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
@@ -41,26 +48,26 @@ class LoginForm extends StatelessWidget {
                         : null,
                     child: state.isLoading
                         ? const CircularProgressIndicator()
-                        : const Text('Login'),
+                        : Text(l10n.login_button),
                   ),
                 ),
                 if (state.status == LoginStatus.failure &&
                     state.errorType == LoginErrorType.auth)
-                  const Text(
-                    'Username or password wrong',
-                    style: TextStyle(color: Colors.red),
+                  Text(
+                    l10n.login_error_auth,
+                    style: const TextStyle(color: Colors.red),
                   ),
                 if (state.status == LoginStatus.failure &&
                     state.errorType == LoginErrorType.network)
-                  const Text(
-                    'Network error. Please try again.',
-                    style: TextStyle(color: Colors.red),
+                  Text(
+                    l10n.login_error_network,
+                    style: const TextStyle(color: Colors.red),
                   ),
                 TextButton(
                   onPressed: () {
                     // TODO: Implement navigation to signup
                   },
-                  child: const Text('Sign Up'),
+                  child: Text(l10n.login_signup),
                 ),
               ],
             ),
