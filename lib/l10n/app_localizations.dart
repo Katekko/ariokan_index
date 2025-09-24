@@ -200,6 +200,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This email is already in use. Try signing in instead.'**
   String get signup_error_emailAlreadyInUse;
+
+  /// No description provided for @login_error_auth.
+  ///
+  /// In en, this message translates to:
+  /// **'Username or password wrong'**
+  String get login_error_auth;
+
+  /// No description provided for @login_error_network.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error. Please try again.'**
+  String get login_error_network;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

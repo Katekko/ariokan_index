@@ -61,4 +61,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signup_error_emailAlreadyInUse => 'This email is already in use. Try signing in instead.';
+
+  @override
+  String get login_error_auth => 'Username or password wrong';
+
+  @override
+  String get login_error_network => 'Network error. Please try again.';
 }

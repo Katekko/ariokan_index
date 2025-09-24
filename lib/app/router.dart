@@ -2,19 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ariokan_index/features/auth_signup/ui/signup_page_setup.dart';
 // Login page stub (to be implemented in auth_login feature slice, T005+)
-import 'package:flutter/widgets.dart' show Widget; // minimal import to allow typedef without implementation yet
-
-/// Stub class placeholder so router compiles before implementation (T005 will add real file).
-class LoginPageStub extends StatelessWidget {
-  const LoginPageStub({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('Login Page (stub)')),
-    );
-  }
-}
+import 'package:ariokan_index/features/auth_login/ui/login_page.dart';
+import 'package:ariokan_index/shared/services/firebase_auth_service.dart';
 
 /// Creates the application router.
 /// Routes:
@@ -27,7 +16,7 @@ GoRouter createRouter() {
       GoRoute(
         path: '/login',
         name: 'login',
-        builder: (context, state) => const LoginPageStub(),
+        builder: (context, state) => const LoginPage(),
       ),
       GoRoute(
         path: '/signup',
@@ -49,7 +38,24 @@ class _DecksPlaceholderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Decks')),
+      appBar: AppBar(
+        title: const Text('Decks'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              // TODO: Use dependency injection for AuthService
+              // For now, create a new instance
+              final auth = FirebaseAuthService();
+              await auth.signOut();
+              if (context.mounted) {
+                context.go('/login');
+              }
+            },
+            tooltip: 'Logout',
+          ),
+        ],
+      ),
       body: const Center(child: Text('Deck list placeholder')),
     );
   }

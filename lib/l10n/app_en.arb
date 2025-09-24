@@ -16,5 +16,7 @@
   "signup_field_error_username_required": "Username is required.",
   "signup_field_error_email_required": "Email is required.",
   "signup_field_error_password_required": "Password is required.",
-  "signup_error_emailAlreadyInUse": "This email is already in use. Try signing in instead."
+  "signup_error_emailAlreadyInUse": "This email is already in use. Try signing in instead.",
+  "login_error_auth": "Username or password wrong",
+  "login_error_network": "Network error. Please try again."
 }
