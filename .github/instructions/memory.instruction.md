@@ -13,6 +13,7 @@ All test doubles (mocks, fakes, stubs) must follow the project guidelines in `.s
 5. Never assign mocks to global variables; keep them inside the test or register() scope.
 6. See `.specify/memory/mocking_guidelines.md` for full details and templates.
 7. Only register each mock once per test file, outside the test group, not per test. Use the returned instance in all tests in that file.
+8. For widget/integration tests, always use `localizedTestRouterApp` (from test/helpers/test_app.dart) to provide a proper localization context and router setup.
 
 ## Non-Negotiable
 

@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ariokan_index/features/auth_login/logic/login_controller.dart';
 import 'package:ariokan_index/features/auth_login/model/login_state.dart'; // Added import for LoginStatus and LoginErrorType
 
-import 'mocks/auth_service_mock.dart';
+import '../mocks/auth_service_mock.dart';
 import 'package:mocktail/mocktail.dart';
 
 void main() {
