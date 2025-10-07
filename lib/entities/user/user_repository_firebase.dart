@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:ariokan_index/entities/user/user_repository.dart';
 import 'package:ariokan_index/shared/utils/result.dart';
 import 'package:ariokan_index/entities/user/user.dart' as domain;
-import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
+import 'package:ariokan_index/features/auth_signup/presentation/cubit/signup_state.dart';
 import 'package:ariokan_index/shared/utils/app_logger.dart';
 import 'package:flutter/cupertino.dart';
 

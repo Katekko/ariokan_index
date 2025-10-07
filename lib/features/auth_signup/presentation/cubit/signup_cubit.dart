@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
+import 'package:ariokan_index/features/auth_signup/presentation/cubit/signup_state.dart';
 import 'package:ariokan_index/shared/utils/validators.dart';
 import 'package:ariokan_index/entities/user/user_repository.dart';
 
-/// SignupController manages form state & submission lifecycle.
-class SignupController extends Cubit<SignupState> {
-  SignupController(this._repo) : super(SignupState.initial());
+/// SignupCubit manages form state & submission lifecycle.
+class SignupCubit extends Cubit<SignupState> {
+  SignupCubit(this._repo) : super(SignupState.initial());
 
   final UserRepository _repo;
   Future<void>? _inFlight;

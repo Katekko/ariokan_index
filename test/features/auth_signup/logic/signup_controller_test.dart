@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:ariokan_index/entities/user/user.dart';
-import 'package:ariokan_index/features/auth_signup/logic/signup_controller.dart';
-import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
+import 'package:ariokan_index/features/auth_signup/presentation/cubit/signup_cubit.dart';
+import 'package:ariokan_index/features/auth_signup/presentation/cubit/signup_state.dart';
 import 'package:ariokan_index/shared/utils/result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -12,10 +12,10 @@ import '../../../entities/user/mocks/user_repository_mock.dart';
 void main() {
   group('SignupController', () {
     final mockRepo = UserRepositoryMock.register();
-    late SignupController controller;
+    late SignupCubit controller;
 
     setUp(() {
-      controller = SignupController(mockRepo);
+      controller = SignupCubit(mockRepo);
     });
 
     test('initial state is idle', () {

@@ -1,18 +1,18 @@
 import 'package:ariokan_index/app/di/di.dart';
-import 'package:ariokan_index/features/auth_signup/logic/signup_controller.dart';
-import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
+import 'package:ariokan_index/features/auth_signup/presentation/cubit/signup_cubit.dart';
+import 'package:ariokan_index/features/auth_signup/presentation/cubit/signup_state.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class SignupControllerMock extends MockCubit<SignupState>
-    implements SignupController {
+    implements SignupCubit {
   SignupControllerMock._();
 
-  static SignupController register() {
+  static SignupCubit register() {
     final mock = SignupControllerMock._();
 
-    setUpAll(() => di.registerFactory<SignupController>(() => mock));
+    setUpAll(() => di.registerFactory<SignupCubit>(() => mock));
 
     setUp(() {
       when(mock.close).thenAnswer((_) async {});

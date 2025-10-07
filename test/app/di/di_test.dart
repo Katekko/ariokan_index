@@ -1,7 +1,7 @@
 import 'package:ariokan_index/app/di/di.dart';
 import 'package:ariokan_index/entities/user/user_repository.dart';
 import 'package:ariokan_index/entities/user/user_repository_firebase.dart';
-import 'package:ariokan_index/features/auth_signup/logic/signup_controller.dart';
+import 'package:ariokan_index/features/auth_signup/presentation/cubit/signup_cubit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
@@ -26,7 +26,7 @@ void main() {
             .having((r) => r.firestore, 'firestore', isA<FirebaseFirestore>()),
       );
 
-      expect(di.isRegistered<SignupController>(), isTrue);
+      expect(di.isRegistered<SignupCubit>(), isTrue);
     });
   });
 }

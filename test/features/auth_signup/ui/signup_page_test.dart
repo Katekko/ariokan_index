@@ -1,4 +1,4 @@
-import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
+import 'package:ariokan_index/features/auth_signup/presentation/cubit/signup_state.dart';
 import 'package:ariokan_index/features/auth_signup/ui/signup_page_setup.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ariokan_index/features/auth_signup/logic/signup_controller.dart';
-import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
+import 'package:ariokan_index/features/auth_signup/presentation/cubit/signup_cubit.dart';
+import 'package:ariokan_index/features/auth_signup/presentation/cubit/signup_state.dart';
 import 'package:ariokan_index/l10n/app_localizations.dart';
 
 class SignupFormWidget extends StatefulWidget {
@@ -40,13 +40,13 @@ class _SignupFormWidgetState extends State<SignupFormWidget> {
     setState(() => _submitted = true);
     final valid = _formKey.currentState?.validate() ?? false;
     if (!valid) return;
-    context.read<SignupController>().submit();
+    context.read<SignupCubit>().submit();
   }
 
   @override
   Widget build(BuildContext context) {
-    final controller = context.read<SignupController>();
-    return BlocBuilder<SignupController, SignupState>(
+    final controller = context.read<SignupCubit>();
+    return BlocBuilder<SignupCubit, SignupState>(
       bloc: controller,
       builder: (context, state) {
         final busy = state.status == SignupStatus.submitting;

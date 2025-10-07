@@ -1,6 +1,6 @@
 import 'package:ariokan_index/app/di/di.dart';
 import 'package:ariokan_index/entities/user/user_repository.dart';
-import 'package:ariokan_index/features/auth_signup/logic/signup_controller.dart';
+import 'package:ariokan_index/features/auth_signup/presentation/cubit/signup_cubit.dart';
 import 'package:ariokan_index/features/auth_signup/setup.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -21,10 +21,10 @@ void main() {
 
         SignupSetup.init();
 
-        final c1 = di<SignupController>();
-        final c2 = di<SignupController>();
+        final c1 = di<SignupCubit>();
+        final c2 = di<SignupCubit>();
 
-        expect(c1, isA<SignupController>());
+        expect(c1, isA<SignupCubit>());
         expect(
           identical(c1, c2),
           isFalse,

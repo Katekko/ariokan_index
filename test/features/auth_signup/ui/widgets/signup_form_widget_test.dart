@@ -1,6 +1,6 @@
-import 'package:ariokan_index/features/auth_signup/logic/signup_controller.dart';
-import 'package:ariokan_index/features/auth_signup/ui/widgets/signup_form_widget.dart';
-import 'package:ariokan_index/features/auth_signup/model/signup_state.dart';
+import 'package:ariokan_index/features/auth_signup/presentation/cubit/signup_cubit.dart';
+import 'package:ariokan_index/features/auth_signup/presentation/widgets/signup_form_widget.dart';
+import 'package:ariokan_index/features/auth_signup/presentation/cubit/signup_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,7 +17,7 @@ void main() {
 
   testWidgets('constructor executed via pump (non-const)', (tester) async {
     await tester.pumpWidget(localizedTestApp(
-      BlocProvider<SignupController>(
+      BlocProvider<SignupCubit>(
         create: (_) => controller,
         child: SignupFormWidget(key: UniqueKey()),
       ),
@@ -26,7 +26,7 @@ void main() {
   });
 
   Widget widgetBuilder() => localizedTestApp(
-    BlocProvider<SignupController>(
+    BlocProvider<SignupCubit>(
       create: (_) => controller,
       child: const SignupFormWidget(),
     ),
