@@ -2,6 +2,19 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "check-coverage",
+      "type": "shell",
+      "command": "./.specify/scripts/bash/check-coverage.sh",
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "build_runner: build",
       "type": "shell",
       "command": "flutter",
@@ -14,7 +27,7 @@
       ],
       "group": {
         "kind": "build",
-        "isDefault": true
+        "isDefault": false
       },
       "presentation": {
         "reveal": "always"
@@ -40,6 +53,6 @@
         "reveal": "always"
       },
       "problemMatcher": []
-    }
+    },
   ]
 }
