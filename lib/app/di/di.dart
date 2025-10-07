@@ -1,4 +1,5 @@
 import 'package:ariokan_index/features/auth_signup/setup.dart';
+import 'package:ariokan_index/features/auth_login/setup.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
@@ -27,5 +28,5 @@ void _setupInfra({FirebaseAuth? auth, FirebaseFirestore? firestore}) {
 
 void _setupFeatures() {
   SignupSetup.init();
-  // LoginSetup.init();
+  LoginSetup.init();
 }
