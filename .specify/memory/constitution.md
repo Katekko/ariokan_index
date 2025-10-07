@@ -83,6 +83,13 @@ Core domain fields (e.g., deck identity, username) are immutable after creation.
 ### IV. Test-First & Coverage Discipline
 All domain logic and validators require unit tests. Golden/widget tests are required for critical UI. No implementation may proceed before failing tests are written. PRs must not reduce test coverage for changed lines.
 
+**Test Setup Patterns:**
+- DO NOT use `late` variables for mock instances in tests
+- Create mock instances directly and assign them immediately
+- Reset mocks in `tearDown()`, never reset the DI container between tests
+- Register all required dependencies in `setUpAll()` exactly once per test file
+- Individual tests should not modify DI registrations
+
 ### V. Observability & Logging
 Structured logging is required for all significant user and system actions. The AppLogger utility must be used for all logs. No secrets or sensitive data may be logged. Logs must use stable event identifiers and be sanitized.
 
@@ -101,11 +108,18 @@ All new features follow a spec → tasks → branch workflow. Failing tests must
 
 This constitution supersedes all other practices. Amendments require documentation, approval, and a migration plan. All PRs and reviews must verify compliance with these principles. Versioning follows semantic rules: MAJOR for breaking/removal, MINOR for new/expanded principles, PATCH for clarifications. Compliance reviews are required for all architectural or contract changes.
 
-**Version**: 1.1.1 | **Ratified**: 2025-09-24 | **Last Amended**: 2025-10-07
+**Version**: 1.1.2 | **Ratified**: 2025-09-24 | **Last Amended**: 2025-10-07
 
 ---
 
 ## Changelog
+
+### 1.1.2 (2025-10-07)
+- **PATCH**: Added test setup patterns to Test-First & Coverage Discipline
+- Prohibited use of `late` variables for mocks
+- Mandated `setUpAll()` for DI registration (once per test file)
+- Prohibited DI reset between tests
+- Required mock reset in `tearDown()` only
 
 ### 1.1.1 (2025-10-07)
 - **PATCH**: Clarified use case responsibility for business logic orchestration
