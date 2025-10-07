@@ -17,9 +17,15 @@
   "signup_field_error_email_required": "Email is required.",
   "signup_field_error_password_required": "Password is required.",
   "signup_error_emailAlreadyInUse": "This email is already in use. Try signing in instead.",
-  "login_error_auth": "Username or password wrong",
-  "login_error_network": "Network error. Please try again.",
-  "login_button": "Login",
   "login_title": "Login",
-  "login_signup": "Sign Up"
+  "login_username_label": "Username",
+  "login_password_label": "Password",
+  "login_button": "Login",
+  "login_signup": "Don't have an account? Sign Up",
+  "login_error_invalidCredentials": "Username or password wrong",
+  "login_error_userNotFound": "Username or password wrong",
+  "login_error_networkFailure": "Network error. Please check your connection and try again.",
+  "login_error_usernameEmpty": "Username is required",
+  "login_error_passwordEmpty": "Password is required",
+  "login_error_unknown": "An unexpected error occurred. Please try again."
 }

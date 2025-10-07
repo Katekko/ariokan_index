@@ -201,17 +201,23 @@ abstract class AppLocalizations {
   /// **'This email is already in use. Try signing in instead.'**
   String get signup_error_emailAlreadyInUse;
 
-  /// No description provided for @login_error_auth.
+  /// No description provided for @login_title.
   ///
   /// In en, this message translates to:
-  /// **'Username or password wrong'**
-  String get login_error_auth;
+  /// **'Login'**
+  String get login_title;
 
-  /// No description provided for @login_error_network.
+  /// No description provided for @login_username_label.
   ///
   /// In en, this message translates to:
-  /// **'Network error. Please try again.'**
-  String get login_error_network;
+  /// **'Username'**
+  String get login_username_label;
+
+  /// No description provided for @login_password_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get login_password_label;
 
   /// No description provided for @login_button.
   ///
@@ -219,17 +225,47 @@ abstract class AppLocalizations {
   /// **'Login'**
   String get login_button;
 
-  /// No description provided for @login_title.
-  ///
-  /// In en, this message translates to:
-  /// **'Login'**
-  String get login_title;
-
   /// No description provided for @login_signup.
   ///
   /// In en, this message translates to:
-  /// **'Sign Up'**
+  /// **'Don\'t have an account? Sign Up'**
   String get login_signup;
+
+  /// No description provided for @login_error_invalidCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Username or password wrong'**
+  String get login_error_invalidCredentials;
+
+  /// No description provided for @login_error_userNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Username or password wrong'**
+  String get login_error_userNotFound;
+
+  /// No description provided for @login_error_networkFailure.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error. Please check your connection and try again.'**
+  String get login_error_networkFailure;
+
+  /// No description provided for @login_error_usernameEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Username is required'**
+  String get login_error_usernameEmpty;
+
+  /// No description provided for @login_error_passwordEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required'**
+  String get login_error_passwordEmpty;
+
+  /// No description provided for @login_error_unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'An unexpected error occurred. Please try again.'**
+  String get login_error_unknown;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
