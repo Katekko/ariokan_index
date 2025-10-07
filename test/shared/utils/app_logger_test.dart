@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:ariokan_index/shared/utils/app_logger.dart';
+import 'package:ariokan_index/core/utils/app_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 

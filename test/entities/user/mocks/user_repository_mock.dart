@@ -1,6 +1,6 @@
 import 'package:ariokan_index/app/di/di.dart';
 import 'package:ariokan_index/entities/user/user_repository.dart';
-import 'package:ariokan_index/shared/utils/result.dart';
+import 'package:ariokan_index/core/utils/result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

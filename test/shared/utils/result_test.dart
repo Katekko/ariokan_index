@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ariokan_index/shared/utils/result.dart';
+import 'package:ariokan_index/core/utils/result.dart';
 
 void main() {
   group('Result.fold/map', () {

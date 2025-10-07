@@ -3,7 +3,7 @@ import 'package:ariokan_index/features/auth_signup/domain/exceptions/auth_signup
 import 'package:ariokan_index/features/auth_signup/domain/usecases/signup_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ariokan_index/features/auth_signup/presentation/cubit/signup_state.dart';
-import 'package:ariokan_index/shared/utils/validators.dart';
+import 'package:ariokan_index/core/utils/validators.dart';
 
 /// SignupCubit manages form state & submission lifecycle.
 class SignupCubit extends Cubit<SignupState> {

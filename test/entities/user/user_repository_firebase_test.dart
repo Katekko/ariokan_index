@@ -1,6 +1,6 @@
 import 'package:ariokan_index/entities/user/user_repository_firebase.dart';
 import 'package:ariokan_index/features/auth_signup/presentation/cubit/signup_state.dart';
-import 'package:ariokan_index/shared/utils/result.dart';
+import 'package:ariokan_index/core/utils/result.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;

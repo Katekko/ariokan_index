@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ariokan_index/shared/utils/validators.dart';
+import 'package:ariokan_index/core/utils/validators.dart';
 import 'package:ariokan_index/shared/constants/limits.dart';
 
 void main() {

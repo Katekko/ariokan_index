@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:ariokan_index/entities/user/user.dart';
 import 'package:ariokan_index/features/auth_signup/presentation/cubit/signup_cubit.dart';
 import 'package:ariokan_index/features/auth_signup/presentation/cubit/signup_state.dart';
-import 'package:ariokan_index/shared/utils/result.dart';
+import 'package:ariokan_index/core/utils/result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
