@@ -24,6 +24,32 @@ void main() {
   });
 
   group('Interactions', () {
+    testWidgets('tapping login button calls submit with correct arguments', (
+      tester,
+    ) async {
+      when(() => mock.state).thenReturn(
+        const LoginState(
+          username: 'user',
+          password: 'pass',
+          status: LoginStatus.idle,
+        ),
+      );
+      when(
+        () => mock.submit(
+          username: any(named: 'username'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) async {});
+
+      await tester.pumpWidget(localizedTestApp(const LoginForm()));
+
+      final loginButton = find.byType(ElevatedButton);
+      expect(loginButton, findsOneWidget);
+      await tester.tap(loginButton);
+      await tester.pump();
+
+      verify(() => mock.submit(username: 'user', password: 'pass')).called(1);
+    });
     testWidgets('constructor works', (tester) async {
       when(() => mock.state).thenReturn(const LoginState());
       await tester.pumpWidget(localizedTestApp(const LoginForm()));
@@ -66,6 +92,17 @@ void main() {
       when(() => mock.state).thenReturn(const LoginState());
       await tester.pumpWidget(localizedTestApp(const LoginForm()));
       expect(find.byType(TextButton), findsOneWidget);
+    });
+
+    testWidgets('tapping signup button triggers onPressed', (tester) async {
+      when(() => mock.state).thenReturn(const LoginState());
+      await tester.pumpWidget(localizedTestApp(const LoginForm()));
+      final signupButton = find.byType(TextButton);
+      expect(signupButton, findsOneWidget);
+      await tester.tap(signupButton);
+      await tester.pump();
+      // No navigation yet, but this covers the onPressed callback for coverage.
+      // If navigation is implemented, add a check here.
     });
   });
 }
