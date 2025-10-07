@@ -1,3 +1,5 @@
+import 'package:ariokan_index/features/auth_signup/data/models/signup_body.dart';
+
 import '../providers/auth_signup_provider.dart';
 import '../exceptions/auth_signup_exceptions.dart';
 
@@ -13,6 +15,12 @@ class SignupUsecase {
     required String email,
     required String password,
   }) async {
-    await provider.signup(username: username, email: email, password: password);
+    final body = SignupBody(
+      email: email,
+      password: password,
+      username: username,
+    );
+
+    await provider.signup(body);
   }
 }

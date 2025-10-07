@@ -1,21 +1,20 @@
 import 'package:equatable/equatable.dart';
+import 'package:ariokan_index/features/auth_login/domain/exceptions/login_exceptions.dart';
 
-enum LoginStatus { idle, submitting, success, failure }
-
-enum LoginErrorType { auth, network }
+enum LoginStatus { idle, submitting, success, error }
 
 class LoginState extends Equatable {
   const LoginState({
     this.username = '',
     this.password = '',
     this.status = LoginStatus.idle,
-    this.errorType,
+    this.error,
   });
 
   final String username;
   final String password;
   final LoginStatus status;
-  final LoginErrorType? errorType;
+  final LoginError? error;
 
   bool get isLoading => status == LoginStatus.submitting;
   bool get canSubmit =>
@@ -25,16 +24,17 @@ class LoginState extends Equatable {
     String? username,
     String? password,
     LoginStatus? status,
-    LoginErrorType? errorType,
+    LoginError? error,
+    bool clearError = false,
   }) {
     return LoginState(
       username: username ?? this.username,
       password: password ?? this.password,
       status: status ?? this.status,
-      errorType: errorType,
+      error: clearError ? null : (error ?? this.error),
     );
   }
 
   @override
-  List<Object?> get props => [username, password, status, errorType];
+  List<Object?> get props => [username, password, status, error];
 }

@@ -1,7 +1,5 @@
+import 'package:ariokan_index/features/auth_signup/data/models/signup_body.dart';
+
 abstract class AuthSignupProvider {
-  Future<void> signup({
-    required String username,
-    required String email,
-    required String password,
-  });
+  Future<void> signup(SignupBody body);
 }

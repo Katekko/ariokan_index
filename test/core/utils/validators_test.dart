@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ariokan_index/core/utils/validators.dart';
-import 'package:ariokan_index/shared/constants/limits.dart';
 
 void main() {
   group('validateUsername', () {
@@ -11,7 +10,11 @@ void main() {
     });
 
     test('rejects invalid usernames', () {
-      expect(validateUsername('Abc'), isNotNull, reason: 'uppercase not allowed');
+      expect(
+        validateUsername('Abc'),
+        isNotNull,
+        reason: 'uppercase not allowed',
+      );
       expect(validateUsername('ab'), isNotNull, reason: 'too short');
       expect(validateUsername('this_is_way_too_long_for_rule'), isNotNull);
       expect(validateUsername('bad-char!'), isNotNull);
@@ -35,6 +38,9 @@ void main() {
   });
 
   group('validatePassword', () {
+    const passwordMinLength = 6;
+    const passwordMaxLength = 128;
+
     test('accepts boundary lengths', () {
       expect(validatePassword('a' * passwordMinLength), isNull);
       expect(validatePassword('b' * passwordMaxLength), isNull);

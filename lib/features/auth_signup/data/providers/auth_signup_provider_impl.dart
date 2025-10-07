@@ -1,3 +1,4 @@
+import 'package:ariokan_index/features/auth_signup/data/models/signup_body.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/providers/auth_signup_provider.dart';
@@ -17,16 +18,12 @@ class AuthSignupProviderImpl implements AuthSignupProvider {
   static const _usersCollection = 'users';
 
   @override
-  Future<void> signup({
-    required String username,
-    required String email,
-    required String password,
-  }) async {
+  Future<void> signup(SignupBody body) async {
     // Step 1: Check if username is already taken (fail fast)
     try {
       final usernameDoc = await _firestore
           .collection(_usernameCollection)
-          .doc(username)
+          .doc(body.username)
           .get();
 
       if (usernameDoc.exists) {
@@ -51,8 +48,8 @@ class AuthSignupProviderImpl implements AuthSignupProvider {
     late final UserCredential userCredential;
     try {
       userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
+        email: body.email,
+        password: body.password,
       );
     } on FirebaseAuthException catch (e) {
       throw _mapAuthException(e);
@@ -71,7 +68,7 @@ class AuthSignupProviderImpl implements AuthSignupProvider {
       final createdAtIso = DateTime.now().toUtc().toIso8601String();
 
       // Create username reservation document
-      await _firestore.collection(_usernameCollection).doc(username).set({
+      await _firestore.collection(_usernameCollection).doc(body.username).set({
         'uid': uid,
         'createdAt': createdAtIso,
       });
@@ -79,8 +76,8 @@ class AuthSignupProviderImpl implements AuthSignupProvider {
       // Create user profile document
       await _firestore.collection(_usersCollection).doc(uid).set({
         'id': uid,
-        'username': username,
-        'email': email,
+        'username': body.username,
+        'email': body.email,
         'createdAt': createdAtIso,
       });
     } catch (e) {
