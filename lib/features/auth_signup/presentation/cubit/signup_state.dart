@@ -1,20 +1,8 @@
 import 'package:equatable/equatable.dart';
 
-// Signup state model (T018/T019)
-
-enum SignupErrorCode {
-  usernameTaken,
-  usernameInvalid,
-  emailInvalid,
-  emailAlreadyInUse,
-  passwordWeak,
-  networkFailure,
-  rollbackFailed,
-  unknown,
-}
-
 class SignupError extends Equatable {
   const SignupError(this.code, {this.message});
+
   final SignupErrorCode code;
   final String? message;
 
@@ -69,4 +57,15 @@ class SignupState extends Equatable {
 
   @override
   List<Object?> get props => [username, email, password, status, error];
+}
+
+enum SignupErrorCode {
+  usernameTaken,
+  usernameInvalid,
+  emailInvalid,
+  emailAlreadyInUse,
+  passwordWeak,
+  networkFailure,
+  rollbackFailed,
+  unknown,
 }

@@ -1,14 +1,17 @@
 import 'dart:async';
+import 'package:ariokan_index/features/auth_signup/domain/exceptions/auth_signup_exceptions.dart';
+import 'package:ariokan_index/features/auth_signup/domain/usecases/signup_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ariokan_index/features/auth_signup/presentation/cubit/signup_state.dart';
 import 'package:ariokan_index/shared/utils/validators.dart';
-import 'package:ariokan_index/entities/user/user_repository.dart';
 
 /// SignupCubit manages form state & submission lifecycle.
 class SignupCubit extends Cubit<SignupState> {
-  SignupCubit(this._repo) : super(SignupState.initial());
+  SignupCubit({required SignupUsecase signupUsecase})
+    : _signupUsecase = signupUsecase,
+      super(SignupState.initial());
 
-  final UserRepository _repo;
+  final SignupUsecase _signupUsecase;
   Future<void>? _inFlight;
 
   void updateUsername(String v) =>
@@ -19,8 +22,8 @@ class SignupCubit extends Cubit<SignupState> {
       emit(state.copyWith(password: v, clearError: true));
 
   Future<void> submit() {
-    if (_inFlight != null) return _inFlight!; // already running
-    // Perform sync validations first; return early on failure.
+    if (_inFlight != null) return _inFlight!;
+
     final usernameErr = validateUsername(state.username);
     if (usernameErr != null) {
       final s = state.copyWith(
@@ -62,23 +65,23 @@ class SignupCubit extends Cubit<SignupState> {
     );
     emit(submitting);
     try {
-      final result = await _repo.createUserWithUsername(
+      await _signupUsecase.call(
         username: submitting.username,
         email: submitting.email,
         password: submitting.password,
       );
-      final next = result.fold(
-        failure: (e) =>
-            submitting.copyWith(status: SignupStatus.error, error: e),
-        success: (_) => submitting.copyWith(status: SignupStatus.success),
-      );
-      emit(next);
-    } catch (_) {
+
+      final success = submitting.copyWith(status: SignupStatus.success);
+      emit(success);
+    } on AuthSignupException catch (err) {
       final errState = submitting.copyWith(
         status: SignupStatus.error,
-        error: const SignupError(SignupErrorCode.networkFailure),
+        error: SignupError(err.code.toSignupErrorCode()),
       );
+
       emit(errState);
+    } catch (_) {
+      rethrow;
     } finally {
       _inFlight = null;
     }

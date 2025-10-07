@@ -1,8 +1,6 @@
 import 'package:ariokan_index/features/auth_signup/presentation/pages/signup_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ariokan_index/features/auth_login/ui/login_page.dart';
-import 'package:ariokan_index/shared/services/firebase_auth_service.dart';
 
 /// Creates the application router.
 /// Routes:
@@ -10,13 +8,13 @@ import 'package:ariokan_index/shared/services/firebase_auth_service.dart';
 ///  /decks   -> Placeholder deck list page
 GoRouter createRouter() {
   return GoRouter(
-    initialLocation: Routes.login,
+    initialLocation: Routes.signup,
     routes: [
-      GoRoute(
-        path: Routes.login,
-        name: 'login',
-        builder: (context, state) => const LoginPage(),
-      ),
+      // GoRoute(
+      //   path: Routes.login,
+      //   name: 'login',
+      //   builder: (context, state) => const LoginPage(),
+      // ),
       GoRoute(
         path: Routes.signup,
         name: 'signup',
@@ -45,11 +43,11 @@ class _DecksPlaceholderPage extends StatelessWidget {
             onPressed: () async {
               // TODO: Use dependency injection for AuthService
               // For now, create a new instance
-              final auth = FirebaseAuthService();
-              await auth.signOut();
-              if (context.mounted) {
-                context.go('/login');
-              }
+              // final auth = FirebaseAuthService();
+              // await auth.signOut();
+              // if (context.mounted) {
+              //   context.go('/login');
+              // }
             },
             tooltip: 'Logout',
           ),

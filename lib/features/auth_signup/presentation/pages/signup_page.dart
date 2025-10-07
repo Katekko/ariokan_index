@@ -31,25 +31,28 @@ class _AuthSignupPageState extends State<AuthSignupPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final controller = context.read<SignupCubit>();
     return BlocProvider(
       create: (_) => di.get<SignupCubit>(),
-      child: BlocListener<SignupCubit, SignupState>(
-        bloc: controller,
-        listenWhen: _listenWhenStatusChanged,
-        listener: _onStatusChanged,
-        child: Scaffold(
-          appBar: AppBar(title: Text(l10n.signup_title)),
-          body: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 460),
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: const SignupFormWidget(),
+      child: Builder(
+        builder: (context) {
+          return BlocListener<SignupCubit, SignupState>(
+            bloc: context.read<SignupCubit>(),
+            listenWhen: _listenWhenStatusChanged,
+            listener: _onStatusChanged,
+            child: Scaffold(
+              appBar: AppBar(title: Text(l10n.signup_title)),
+              body: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 460),
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(24),
+                    child: const SignupFormWidget(),
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
