@@ -15,9 +15,11 @@ import 'package:ariokan_index/core/utils/app_logger.dart';
 /// - Username not found / wrong password → LoginErrorCode.invalidCredentials
 /// - Network issues → LoginErrorCode.networkFailure
 class AuthLoginProviderImpl implements AuthLoginProvider {
-  AuthLoginProviderImpl({fb.FirebaseAuth? auth, FirebaseFirestore? firestore})
-    : _auth = auth ?? fb.FirebaseAuth.instance,
-      _firestore = firestore ?? FirebaseFirestore.instance;
+  AuthLoginProviderImpl({
+    required fb.FirebaseAuth auth,
+    required FirebaseFirestore firestore,
+  }) : _auth = auth,
+       _firestore = firestore;
 
   final fb.FirebaseAuth _auth;
   final FirebaseFirestore _firestore;

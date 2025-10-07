@@ -6,10 +6,10 @@ import '../../domain/exceptions/auth_signup_exceptions.dart';
 
 class AuthSignupProviderImpl implements AuthSignupProvider {
   AuthSignupProviderImpl({
-    FirebaseAuth? firebaseAuth,
-    FirebaseFirestore? firestore,
-  }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-       _firestore = firestore ?? FirebaseFirestore.instance;
+    required FirebaseAuth firebaseAuth,
+    required FirebaseFirestore firestore,
+  }) : _firebaseAuth = firebaseAuth,
+       _firestore = firestore;
 
   final FirebaseAuth _firebaseAuth;
   final FirebaseFirestore _firestore;
