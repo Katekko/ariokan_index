@@ -56,6 +56,7 @@ features/
 **Layer Responsibilities:**
 - **data/**: Handles external data sources (API, Firebase, local storage). Contains DTOs and concrete provider implementations.
 - **domain/**: Contains pure business logic, use cases, provider contracts, and domain exceptions. No framework dependencies.
+  - **Use Cases**: Encapsulate ALL business logic and orchestrate operations across multiple providers. A use case may coordinate remote API calls, local storage operations, and any other data operations required to complete a business transaction. For example, a signup use case would handle both creating the user account remotely AND saving user data locally.
 - **presentation/**: Manages UI state, widgets, pages, and user interactions. Depends on domain layer only.
 
 ### II. Layered Dependency Rules
@@ -64,9 +65,17 @@ Higher layers may depend only on the same or inner layers. Features must not imp
 **Feature Layer Dependencies:**
 - `presentation/` → `domain/` (allowed)
 - `data/` → `domain/` (allowed for interfaces)
-- `domain/` → NO dependencies on `presentation/` or `data/`
+- `domain/` → NO dependencies on `presentation/` or `data/` concrete implementations
+- `domain/usecases/` → `domain/providers/` (allowed - use cases orchestrate via provider interfaces)
 - Features → `shared/` (allowed)
 - Features ↔ Features (forbidden - use shared abstractions)
+
+**Use Case Orchestration Rules:**
+- Use cases are the ONLY place where business logic resides
+- Use cases may coordinate multiple provider operations (e.g., save remotely + save locally)
+- Use cases receive provider dependencies via constructor injection
+- Presentation layer (cubits) should call use cases, not providers directly
+- Use cases must remain framework-agnostic (no Flutter/UI dependencies)
 
 ### III. Immutability & Data Integrity
 Core domain fields (e.g., deck identity, username) are immutable after creation. This is enforced at both repository and Firestore security rules layers. All data mutations must be validated and reversible.
@@ -92,11 +101,17 @@ All new features follow a spec → tasks → branch workflow. Failing tests must
 
 This constitution supersedes all other practices. Amendments require documentation, approval, and a migration plan. All PRs and reviews must verify compliance with these principles. Versioning follows semantic rules: MAJOR for breaking/removal, MINOR for new/expanded principles, PATCH for clarifications. Compliance reviews are required for all architectural or contract changes.
 
-**Version**: 1.1.0 | **Ratified**: 2025-09-24 | **Last Amended**: 2025-10-07
+**Version**: 1.1.1 | **Ratified**: 2025-09-24 | **Last Amended**: 2025-10-07
 
 ---
 
 ## Changelog
+
+### 1.1.1 (2025-10-07)
+- **PATCH**: Clarified use case responsibility for business logic orchestration
+- Added explicit rule that use cases handle ALL business logic including multi-provider coordination
+- Documented use case orchestration patterns (e.g., remote + local operations)
+- Added use case dependency injection requirements
 
 ### 1.1.0 (2025-10-07)
 - **MINOR**: Expanded Feature-Sliced Architecture with detailed three-layer structure (data/domain/presentation)
