@@ -219,12 +219,12 @@ void main() {
         act: (cubit) => cubit.submit(),
         expect: () => [
           const LoginState(
-            username: '  testuser  ',
+            username: 'testuser',
             password: 'password123',
             status: LoginStatus.submitting,
           ),
           const LoginState(
-            username: '  testuser  ',
+            username: 'testuser',
             password: 'password123',
             status: LoginStatus.success,
           ),
@@ -232,7 +232,7 @@ void main() {
         verify: (_) {
           verify(
             () => mockUseCase.call(
-              username: '  testuser  ',
+              username: 'testuser',
               password: 'password123',
             ),
           ).called(1);

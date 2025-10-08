@@ -57,7 +57,9 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   Future<void> _doSubmit() async {
+    // Ensure username is trimmed for submission
     final submitting = state.copyWith(
+      username: state.username.trim(),
       status: LoginStatus.submitting,
       clearError: true,
     );
