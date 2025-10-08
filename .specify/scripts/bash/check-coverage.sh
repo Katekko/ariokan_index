@@ -45,6 +45,7 @@ if command -v full_coverage >/dev/null 2>&1; then
 else
   error "full_coverage tool not found. Install with: dart pub global activate full_coverage"
   error "Continuing without full_coverage..."
+  exit 1
 fi
 
 step "Running flutter tests with coverage"
@@ -63,8 +64,14 @@ if command -v pull_request_coverage >/dev/null 2>&1; then
     --output-mode markdown \
     --markdown-mode dart \
     --fully-tested-message "All covered" \
-    > missing_coverage.md
+    > "${tmp_report}"
   pr_cov_exit=$?
+  # Only persist file if it actually contains uncovered markers
+  if grep -q "MISSING TEST" "${tmp_report}" 2>/dev/null; then
+    mv "${tmp_report}" missing_coverage.md
+  else
+    rm -f "${tmp_report}" || true
+  fi
   set -e
 
   if [ $pr_cov_exit -ne 0 ]; then
@@ -72,12 +79,18 @@ if command -v pull_request_coverage >/dev/null 2>&1; then
       warn "Diff coverage below threshold (${MIN_DIFF_COVERAGE}%). See missing_coverage.md"
     else
       error "Tool likely failed (not just low coverage). Contents of missing_coverage.md may be incomplete."
+      exit 1
     fi
   else
-    success "missing_coverage.md written"
+    if [ -f missing_coverage.md ]; then
+      success "missing_coverage.md written (uncovered lines present)"
+    else
+      success "All new/changed lines covered; no missing_coverage.md generated."
+    fi
   fi
 else
   error "pull_request_coverage tool not found in PATH. Skipping diff coverage markdown."
+  exit 1
 fi
 
 step "Cleaning up full_coverage_test.dart"
