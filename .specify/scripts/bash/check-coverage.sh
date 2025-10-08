@@ -56,6 +56,9 @@ if command -v pull_request_coverage >/dev/null 2>&1; then
   # Allow caller to override threshold; default 100 to keep strictness unless relaxed explicitly.
   : "${MIN_DIFF_COVERAGE:=100}"
 
+  # Create a temporary file for the coverage report
+  tmp_report=$(mktemp)
+
   # We want to always write a markdown file even on failure, without aborting script earlier.
   set +e
   git diff "origin/${TARGET_BRANCH}" | pull_request_coverage \
