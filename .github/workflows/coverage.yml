@@ -15,6 +15,8 @@ jobs:
     name: Flutter Tests & Coverage
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    env:
+      MIN_DIFF_COVERAGE: 90
     steps:
       - name: Checkout
         uses: actions/checkout@v4
