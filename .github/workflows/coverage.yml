@@ -41,6 +41,9 @@ jobs:
           dart pub global activate pull_request_coverage
           echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
 
+      - name: Install full_coverage (Dart global)
+        run: dart pub global activate full_coverage
+
       - name: Flutter doctor (sanity)
         run: flutter doctor -v
 
@@ -49,7 +52,7 @@ jobs:
 
       - name: Run Tests & Coverage
         id: run_tests
-        run: bash scripts/check-coverage.sh
+        run: bash .specify/scripts/bash/check-coverage.sh
 
       - name: Post-process Diff Coverage
         if: always()
