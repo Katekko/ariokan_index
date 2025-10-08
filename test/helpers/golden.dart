@@ -59,3 +59,30 @@ Future<void> testGoldenClickable(
     },
   );
 }
+
+/// For widgets with animations (like loading states) that never settle.
+/// Uses TickerMode to disable animations for stable golden snapshots.
+Future<void> testWidgetsGoldenAnimated(
+  String description, {
+  required String fileName,
+  required Widget Function() builder,
+  Future<void> Function()? setUp,
+  Size? size,
+}) async {
+  return goldenTest(
+    description,
+    fileName: fileName,
+    builder: () {
+      setUp?.call();
+
+      return GoldenTestScenario(
+        name: 'web',
+        constraints: BoxConstraints(
+          maxWidth: size?.width ?? 1280,
+          maxHeight: size?.height ?? 720,
+        ),
+        child: TickerMode(enabled: false, child: builder()),
+      );
+    },
+  );
+}

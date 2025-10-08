@@ -90,11 +90,30 @@ All domain logic and validators require unit tests. Golden/widget tests are requ
 - Register all required dependencies in `setUpAll()` exactly once per test file
 - Individual tests should not modify DI registrations
 
+**Widget Test Mock Pattern:**
+For widget tests requiring Cubit/Bloc mocks, create dedicated mock files:
+- Location: `test/features/<feature>/presentation/mocks/<cubit_name>_mock.dart`
+- Naming: `<CubitName>Mock` (e.g., `LoginCubitMock`, `SignupCubitMock`)
+- Pattern: Follow the Controller Mock Template from `mocking_guidelines.md`
+- Usage: Call `final mock = <CubitName>Mock.register();` to get the mock instance
+- Benefits: Centralized mock setup, consistent stubbing, proper DI registration
+- Example: See `test/features/auth_login/presentation/mocks/login_cubit_mock.dart`
+
+**Widget Test Structure:**
+Widget tests (`**/*_widget_test.dart`) should follow these patterns:
+- **Golden Tests**: Use the `setUp` parameter within `testWidgetsGolden()` to configure state/mocks before rendering
+- **Interaction Tests**: Configure state inline before calling `tester.pumpWidget()`
+- **State Mocking**: Use `whenListen()` to mock cubit state, never use `when(() => cubit.state)`
+  - Always provide both `Stream.value()` and `initialState` parameters
+  - This ensures proper BlocProvider stream subscription
+- Keep `buildWidget()` function simple - no state parameters, just build the widget tree
+- Example: See `test/features/auth_login/presentation/widgets/login_form_widget_test.dart`
+
 **Page Test Structure:**
 Page tests (`**/*_page_test.dart`) must follow a two-group pattern:
 - **Interfaces Group**: Contains ONLY golden tests that verify visual appearance and layout
   - Use `testWidgetsGolden()` for all interface tests
-  - Use the `setup` parameter within `testWidgetsGolden()` to configure state/mocks before rendering
+  - Use the `setUp` parameter within `testWidgetsGolden()` to configure state/mocks before rendering
   - Each distinct visual state requires its own golden test
 - **Interactions Group**: Contains behavioral and navigation tests
   - Use standard `testWidgets()` for interaction tests
@@ -125,11 +144,30 @@ All new features follow a spec → tasks → branch workflow. Failing tests must
 
 This constitution supersedes all other practices. Amendments require documentation, approval, and a migration plan. All PRs and reviews must verify compliance with these principles. Versioning follows semantic rules: MAJOR for breaking/removal, MINOR for new/expanded principles, PATCH for clarifications. Compliance reviews are required for all architectural or contract changes.
 
-**Version**: 1.1.3 | **Ratified**: 2025-09-24 | **Last Amended**: 2025-10-07
+**Version**: 1.1.6 | **Ratified**: 2025-09-24 | **Last Amended**: 2025-10-07
 
 ---
 
 ## Changelog
+
+### 1.1.6 (2025-10-07)
+- **PATCH**: Added state mocking requirements to widget test structure
+- Mandated use of `whenListen()` for cubit state mocking (never `when(() => cubit.state)`)
+- Required both `Stream.value()` and `initialState` parameters for proper BlocProvider subscription
+- Ensures consistent and reliable state mocking across all widget tests
+
+### 1.1.5 (2025-10-07)
+- **PATCH**: Added widget test structure guidelines to Test-First & Coverage Discipline
+- Mandated use of `setUp` parameter in `testWidgetsGolden()` for state configuration
+- Required simple `buildWidget()` function without state parameters
+- Distinguished patterns for golden tests vs interaction tests
+- Referenced `login_form_widget_test.dart` as canonical example
+
+### 1.1.4 (2025-10-07)
+- **PATCH**: Added widget test mock pattern to Test-First & Coverage Discipline
+- Mandated dedicated mock files for Cubit/Bloc in widget tests
+- Documented mock file location, naming, and usage patterns
+- Referenced `login_cubit_mock.dart` as canonical example
 
 ### 1.1.3 (2025-10-07)
 - **PATCH**: Added page test structure guidelines to Test-First & Coverage Discipline
