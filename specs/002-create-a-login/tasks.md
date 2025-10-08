@@ -43,6 +43,9 @@
 - [ ] T016 [P] Add unit tests for validation and state transitions in `test/features/auth_login/login_state_test.dart`
 - [ ] T017 [P] Update feature documentation in `/specs/002-create-a-login/quickstart.md` and `/specs/002-create-a-login/research.md` as needed
 - [ ] T018 [P] Manual validation using quickstart scenarios
+- [ ] T019 Create page test for login_page.dart in `test/features/auth_login/presentation/pages/login_page_test.dart` (CRITICAL: Constitution v1.1.3 requirement)
+  - Interfaces group: Golden tests for initial state, loading state, error states (invalidCredentials, networkFailure, validation errors)
+  - Interactions group: Navigation to sign-up test, state listener behavior, route guard on success
 
 ## Dependencies
 - Setup (T001-T003) before all
@@ -52,6 +55,7 @@
 - AuthService integration (T011) and Firebase initialization (T012) before session/logging (T013-T014)
 - Localization (T015) after UI
 - Polish (T016-T018) after all core/integration
+- Page test (T019) after page implementation (T010); can run parallel with other polish tasks
 
 ## Parallel Example
 ```

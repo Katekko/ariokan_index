@@ -31,18 +31,25 @@
 ## Summary
 Primary requirement: Provide a username + password login screen that authenticates users, persists session until logout/cache clear, routes to Decks screen, distinguishes network errors from credential failures, and offers a secondary sign-up navigation. Exclusions: password recovery, brute-force mitigation, accessibility enhancements, performance targets.
 
-High-level approach (aligned with existing architecture): Implement a new feature slice `auth_login` under `features/auth_login/` with `ui/login_page.dart`, `ui/widgets/login_form.dart`, state model `model/login_state.dart`, and controller `logic/login_controller.dart` (controller pattern, similar to signup implementation). It will depend on an existing or extended `AuthService` (under `shared/services/auth_service.dart`) and potentially `UserRepository` for session retrieval. Session persistence uses existing Firebase Auth (assumed) and local persistence semantics already established by signup flow.
+High-level approach (aligned with Constitution v1.1.0+ three-layer architecture): Implement a new feature slice `auth_login` under `features/auth_login/` following Clean Architecture pattern:
+- **presentation layer**: `presentation/pages/login_page.dart`, `presentation/widgets/login_form.dart`, `presentation/models/login_state.dart`, and `presentation/cubit/login_cubit.dart` (Cubit pattern for state management)
+- **domain layer**: `domain/usecases/sign_in_with_username_password_usecase.dart`, `domain/providers/auth_login_provider.dart` (abstract interface), `domain/exceptions/login_exceptions.dart`
+- **data layer**: `data/providers/auth_login_provider_impl.dart` (concrete Firebase implementation), `data/models/login_body.dart` (request DTO)
+
+Session persistence uses Firebase Auth and local persistence semantics established by signup flow.
+
+**Migration Note**: Initial plan draft referenced obsolete `ui/`, `logic/`, `model/` structure. Implementation correctly follows Constitution-mandated `data/`, `domain/`, `presentation/` layers.
 
 ## Technical Context
 **Language/Version**: Dart (Flutter stable per project)  
-**Primary Dependencies**: Flutter, Firebase Auth (implied by existing signup references / firebase options), Provider/Bloc (controller pattern), shared `AuthService` & `AppLogger`  
+**Primary Dependencies**: Flutter, Firebase Auth (implied by existing signup references / firebase options), flutter_bloc (Cubit pattern for state management), domain providers  
 **Storage**: Firebase Auth (credentials/session), Firestore (user profiles)  
-**Testing**: flutter_test, widget tests, potential goldens, repository/controller unit tests  
+**Testing**: flutter_test, widget tests, potential goldens, cubit unit tests, use case tests  
 **Target Platform**: Flutter Web (primary), adaptable to other Flutter targets  
 **Project Type**: Single Flutter app (feature-sliced vertical architecture)  
 **Performance Goals**: None specified for login (explicitly out of scope)  
 **Constraints**: Unlimited attempts, persistent session until logout, generic failure messaging, network error differentiation  
-**Scale/Scope**: Single screen + controller + integration with existing auth services; minimal incremental complexity
+**Scale/Scope**: Single screen + cubit + use cases + integration with existing auth providers; minimal incremental complexity
 
 ## Constitution Check
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
@@ -60,9 +67,9 @@ High-level approach (aligned with existing architecture): Implement a new featur
 - Documentation limited to spec + plan + quickstart; no llms.txt needed
 
 **Testing (NON-NEGOTIABLE)**:
-- RED-GREEN: Will add failing widget test (login form behavior) + controller unit tests first
+- RED-GREEN: Will add failing widget test (login form behavior) + cubit unit tests first
 - Commit ordering: Tests introduced before functional code
-- Order adaptation: Controller + state contract tests (unit) precede widget integration test; no external API endpoints to contract-test (client only)
+- Order adaptation: Cubit + state contract tests (unit) precede widget integration test; no external API endpoints to contract-test (client only)
 - Real dependencies: Firebase Auth interactions abstracted; may use fake in-memory adapter for deterministic tests while avoiding fragile live network calls
 - Integration: Widget test covers credential submission flow + loading state transitions
 - No implementation before initial failing tests
@@ -159,13 +166,13 @@ ios/ or android/
    - State transitions if applicable
 
 2. **Generate UI interaction contracts** (no external API endpoints in this feature):
-   - Define controller interface methods: `submit(username, password)`, `logout()` reference (existing), state fields (username, password, status, errorType, isLoading)
+   - Define cubit interface methods: `submit(username, password)`, state fields (username, password, status, error, isLoading)
    - Define result/error states enumerations in `login_state.dart`.
    - No OpenAPI schema generated (client-only feature); `contracts/` will contain a `ui_contract.md` describing state machine & events.
 
-3. **Generate contract tests** from controller contract:
-   - `login_controller_test.dart`: ensures initial state, trimming behavior, loading state during async, success transition, failure (auth vs network), unlimited retry.
-   - `login_widget_test.dart`: ensures button disabled when fields empty, shows spinner during submit, preserves password on failure, error message variants.
+3. **Generate contract tests** from cubit contract:
+   - `login_cubit_test.dart`: ensures initial state, trimming behavior, loading state during async, success transition, error handling (auth vs network), unlimited retry.
+   - `login_widget_test.dart`: ensures button disabled when fields empty, shows spinner during submit, preserves password on error, error message variants.
 
 4. **Extract test scenarios** from user stories:
    - Each story → integration test scenario

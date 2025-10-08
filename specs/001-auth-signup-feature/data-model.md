@@ -37,7 +37,7 @@ Invariants:
 | email | valid format | Client prevents submit |
 | password | length >=6 and <=128 | Client prevents submit |
 
-## State Machine (Signup Controller)
+## State Machine (Signup Cubit)
 States:
 - idle
 - validating (optional transient)
@@ -51,12 +51,21 @@ Allowed Transitions:
 - error → submitting (retry) | idle (if user edits fields)
 - success → (terminal for this feature flow)
 
-## Error Codes (See research)
-USERNAME_TAKEN, USERNAME_INVALID, EMAIL_INVALID, PASSWORD_WEAK, NETWORK_FAILURE, ROLLBACK_FAILED, UNKNOWN
+## Error Codes (Aligned with Implementation)
+Enum: `SignupErrorCode` (camelCase format)
+- `usernameTaken` - Username already reserved in system
+- `usernameInvalid` - Username fails regex validation  
+- `emailInvalid` - Email format invalid
+- `emailAlreadyInUse` - Firebase auth reports email collision
+- `passwordWeak` - Password below minimum requirements
+- `networkFailure` - Transient network/service failure
+- `rollbackFailed` - Failure during compensating action
+- `unknown` - Unmapped/unexpected errors
 
 ## Data Access Contracts (Preview)
-(See contracts folder for structured API signatures.)
+(See contracts folder for domain operation signatures.)
 
 ## Notes
-- No separate DTO layer; UI interacts with simple value objects/state.
-- Repository returns Result<User, SignupError> (Result type defined in shared later) for createUserWithUsername.
+- DTOs in data layer (`signup_body.dart`, `signup_response.dart`) map between Firebase and domain models.
+- Use case orchestrates signup operation and returns Result<User, SignupError>.
+- Provider interface defines abstract contract; implementation handles Firebase interactions.

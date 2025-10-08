@@ -1,11 +1,17 @@
 # UI Interaction Contract: Login Screen
 
-## Controller Interface (Planned)
-```
-class LoginController extends Cubit<LoginState> {
-  // submit credentials; emits submitting -> success|failure
-  Future<void> submit({required String username, required String password});
-  // (Reference) logout handled elsewhere; may be exposed for completeness
+## Cubit Interface (Implemented)
+```dart
+class LoginCubit extends Cubit<LoginState> {
+  // Update username field (triggers state emission with cleared error)
+  void updateUsername(String value);
+  
+  // Update password field (triggers state emission with cleared error)
+  void updatePassword(String value);
+  
+  // Submit credentials; emits submitting -> success|error
+  // Performs local validation before calling use case
+  Future<void> submit();
 }
 ```
 
@@ -15,15 +21,18 @@ Refer to `data-model.md` for full field list.
 ## Events
 | Event | Preconditions | Resulting Transitions | Notes |
 |-------|---------------|-----------------------|-------|
-| submit_start | canSubmit == true | idle|failure -> submitting | Sets status=submitting, clears errorType |
+| submit_start | canSubmit == true | idle\|error -> submitting | Sets status=submitting, clears error |
 | submit_success | after submit_start | submitting -> success | Emits success, triggers navigation to Decks |
-| submit_failure_auth | after submit_start | submitting -> failure(auth) | Username/password retained |
-| submit_failure_network | after submit_start | submitting -> failure(network) | Allows retry |
-| retry (alias submit) | failure & canSubmit | failure -> submitting | Same as submit_start |
+| submit_error_auth | after submit_start | submitting -> error(invalidCredentials) | Username/password retained |
+| submit_error_network | after submit_start | submitting -> error(networkFailure) | Allows retry |
+| submit_error_validation | canSubmit == false | idle\|error -> error(usernameEmpty\|passwordEmpty) | Local validation failure |
+| retry (alias submit) | error & canSubmit | error -> submitting | Same as submit_start |
 
 ## Error Messaging
-- auth failure → "Username or password wrong"
-- network failure → Localized network connectivity message (key to define: `login.error.network`)
+- invalidCredentials / userNotFound → "Username or password wrong" (generic, FR-006)
+- networkFailure → Localized network connectivity message (FR-012)
+- usernameEmpty → "Username is required"
+- passwordEmpty → "Password is required"
 
 ## Loading Behavior
 - While submitting: login button disabled & shows spinner; fields remain editable (optional decision: keep editable; no lockout)

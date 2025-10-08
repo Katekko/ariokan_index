@@ -33,9 +33,9 @@ Enable unauthenticated visitors to create an account using a unique immutable us
 
 ## Technical Context
 **Language/Version**: Dart (Flutter web)  
-**Primary Dependencies**: Firebase Auth, Cloud Firestore, Bloc/Cubit (state), shared Result utility  
+**Primary Dependencies**: Firebase Auth, Cloud Firestore, flutter_bloc (Cubit for state management), shared Result utility  
 **Storage**: Firestore (collections: users, usernames)  
-**Testing**: Flutter test (unit), alchemist for golden test, future integration harness for repository logic  
+**Testing**: Flutter test (unit), alchemist for golden test, future integration harness for provider and use case logic  
 **Target Platform**: Web (Flutter Web MVP)  
 **Project Type**: Single Flutter app (feature-sliced)  
 **Performance Goals**: Signup end-to-end < 1500ms P95; local validation instant (<16ms)  
@@ -58,9 +58,9 @@ Enable unauthenticated visitors to create an account using a unique immutable us
 - llms.txt docs: Deferred (not required) → PASS
 
 **Testing**:
-- Will create failing tests first for validators & repository logic before implementation → PLAN
-- Order: Model & contract tests precede feature controller → PLAN
-- Real dependencies: For Firestore, may use emulator (future). For now repository logic abstracted; unit tests cover validation states → ACCEPTABLE MVP
+- Will create failing tests first for validators & provider logic before implementation → PLAN
+- Order: Model & contract tests precede feature cubit → PLAN
+- Real dependencies: For Firestore, may use emulator (future). For now provider logic abstracted; unit tests cover validation states → ACCEPTABLE MVP
 - No implementation before tests: To be enforced in tasks.md → PLAN
 
 **Observability**:
@@ -128,46 +128,55 @@ ios/ or android/
 **Structure Decision**: Adopt README-declared feature-sliced layout inside `/ariokan_index/lib/` using root folders: `app/`, `processes/`, `pages/`, `features/`, `entities/`, `shared/`. Current scaffold only has `main.dart`; directories will be added incrementally as tasks execute.
 
 ### Structure Alignment (Auth Signup Scope)
-Planned additions for this feature (only what is required now):
+Planned additions for this feature following Constitution v1.1.0+ three-layer architecture:
 ```
 ariokan_index/lib/
    app/
       app.dart                # Root MaterialApp wrapper (will host theme + router)
       router.dart             # Route table including /signup
-      di/providers.dart       # Top-level providers (auth service, user repository)
-   pages/
-      auth_signup_page/
-         auth_signup_page.dart # Wires signup feature to route
+      di/di.dart              # Top-level DI setup
    features/
       auth_signup/
-         ui/
-            signup_form.dart    # Stateful widget / bloc builder
-         model/
-            signup_state.dart   # Immutable state object
-         logic/
-            signup_controller.dart # Cubit handling validation + submission
-   entities/
-      user/
-         user.dart             # Domain model (id, username, email, createdAt)
-         user_repository.dart  # Interface + impl stub for createUserWithUsername
-   shared/
-      services/
-         auth_service.dart     # Thin wrapper over Firebase Auth (email/pass)
+         data/
+            models/
+               signup_body.dart       # Request DTO
+               signup_response.dart   # Response DTO
+            providers/
+               auth_signup_provider_impl.dart  # Concrete Firebase implementation
+         domain/
+            usecases/
+               signup_usecase.dart    # Business logic orchestration
+            providers/
+               auth_signup_provider.dart  # Abstract provider interface
+            exceptions/
+               auth_signup_exceptions.dart  # Domain-specific exceptions
+         presentation/
+            cubit/
+               signup_cubit.dart      # State management (Cubit pattern)
+               signup_state.dart      # UI state model
+            widgets/
+               signup_form_widget.dart  # Reusable form component
+            pages/
+               signup_page.dart       # Full-screen signup page
+         setup.dart                   # Feature DI registration
+   core/
       firebase/
-         firebase_init.dart    # Firebase initialization (lazy for tests)
+         firebase_init.dart    # Firebase initialization
       utils/
-         result.dart           # Result type (if not existing yet)
+         result.dart           # Result type utility
          validators.dart       # Username/email/password validators
-      constants/
-         limits.dart           # Password length bounds
+         app_logger.dart       # Logging utility
 ```
 
-Deferrals (not created in this feature unless required by tests): `processes/`, other feature folders, design system widgets.
+**Migration Note**: Initial plan draft referenced obsolete `ui/`, `logic/`, `model/`, and `pages/auth_signup_page/` structure. Implementation correctly follows Constitution-mandated three-layer Clean Architecture with pages residing inside each feature's `presentation/pages/` directory.
+
+Deferrals: `processes/`, other feature folders, design system widgets.
 
 Rationale:
-- Minimize early directories to those directly used by auth signup tasks.
-- Keep repository contract under `entities/user` per constitution.
-- Shared validators & result reused later by login/deck features.
+- Align with Constitution v1.1.0+ Feature-Sliced Architecture
+- Clear separation: data (external sources), domain (business logic), presentation (UI)
+- Use cases orchestrate all business logic and coordinate multiple provider operations
+- Shared validators & utilities reused across features
 
 ## Phase 0: Outline & Research
 1. **Extract unknowns from Technical Context** above:
@@ -227,17 +236,17 @@ Rationale:
 
 **Task Generation Strategy**:
 - Parse `contracts/signup_contract.md` → derive contract test tasks (failing) for success + each error code.
-- From `data-model.md` → model/state + repository interface creation tasks.
-- From controller state machine → state & cubit test tasks (failing first).
+- From `data-model.md` → model/state + provider interface creation tasks.
+- From cubit state machine → state & cubit test tasks (failing first).
 - From acceptance scenarios → integration/widget test tasks (redirect, username taken, validation, rollback path simulated via injected failure stub).
 - Quickstart steps → smoke test script task.
 
 **Ordering Strategy**:
 1. Contract test skeletons (failing)
 2. Data model & Result types wiring
-3. Repository interface + mock/fake for tests
+3. Provider interface + mock/fake for tests
 4. Validation utilities (tests first)
-5. Controller state tests then implementation
+5. Cubit state tests then implementation
 6. Widget form tests (validation + submit)
 7. Integration test for atomic rollback (with injected failure)
 8. Cleanup & logging tasks

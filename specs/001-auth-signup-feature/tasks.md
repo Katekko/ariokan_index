@@ -63,6 +63,9 @@ Order enforces: Setup → Failing Tests → Minimal Impl → Integration → Pol
 - [x] T038 (DROPPED 2025-09-10) Lint rule addition for mandatory docs removed – decision to avoid over-strict linting at this stage. [P]
 - [x] T039 (DROPPED 2025-09-10) Performance smoke test deferred; revisit after broader feature integration. [P]
 - [x] T040 Final dependency audit: ensure no feature→feature imports; run static grep to confirm; update plan progress Phase 3 complete.
+- [ ] T041 Create page test for signup_page.dart in `test/features/auth_signup/presentation/pages/signup_page_test.dart` (CRITICAL: Constitution v1.1.3 requirement)
+  - Interfaces group: Golden tests for initial state, submitting state, success state, error states (usernameTaken, emailAlreadyInUse, networkFailure, validation errors)
+  - Interactions group: Navigation to login test (if applicable), redirect on success to deck list, state listener behavior
 
 ## Dependencies & Parallelization
 - T001 precedes all other tasks creating directories.
@@ -71,6 +74,7 @@ Order enforces: Setup → Failing Tests → Minimal Impl → Integration → Pol
 - Repository interface (T021) before controller/repository impl (T023, T024).
 - Tests T007-T014 must be written & failing before corresponding implementation tasks (T015+).
 - [P] tasks explicitly: T003-T006, T037-T039 can run in parallel after their prerequisites.
+- Page test (T041) after page implementation (T028); can run parallel with other polish tasks.
 
 ## Parallel Launch Examples
 ```
