@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ariokan_index/app/router.dart';
+import 'package:ariokan_index/app/di/di.dart';
 import 'package:ariokan_index/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 /// Root App widget (T029)
 class App extends StatefulWidget {
@@ -13,7 +15,15 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  late final GoRouter _router = createRouter();
+  late final GoRouter _router;
+
+  @override
+  void initState() {
+    super.initState();
+    // Get FirebaseAuth from DI and create router with auth-aware redirects
+    final auth = di<FirebaseAuth>();
+    _router = createRouter(auth);
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,7 +1,17 @@
-Before making any changes to this project that could conflict with existing specifications, always review the contents of `memory/constitution.md` and `constitution_update_check.md`. Ensure that your modifications are aligned with the guidelines and requirements described in these files. If so, you need to change the constitution.md first before making the changes.
 
-If you have any question about the dart / flutter documentation, use the MCP/tool to see for your self
+# Copilot Instructions
 
-When talking about the flutter project you can find the project in `./ariokan_index`.
+## Reference: Non-Negotiable Memory
+All contributors and agents must always review and comply with the non-negotiable rules in `.github/instructions/memory.instruction.md` before making any changes. These rules apply to all files and take precedence over other instructions.
 
-Never create tests that is nor mirroring the existing files.
+## Constitution Lookup
+Before making any changes that could conflict with existing specifications, always review the contents of [constitution](../.specify/memory/constitution.md). Ensure that your modifications are aligned with the guidelines and requirements described in these files. If so, you need to change the constitution.md first before making the changes.
+
+## Dart/Flutter Documentation
+If you have any question about the Dart / Flutter documentation, use the MCP/tool to see for yourself.
+
+## Flutter Project Location
+When talking about the Flutter project you can find the project in `./ariokan_index`.
+
+## Test Creation
+Never create tests that are not mirroring the existing files.

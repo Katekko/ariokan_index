@@ -61,4 +61,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signup_error_emailAlreadyInUse => 'This email is already in use. Try signing in instead.';
+
+  @override
+  String get login_title => 'Login';
+
+  @override
+  String get login_username_label => 'Username';
+
+  @override
+  String get login_password_label => 'Password';
+
+  @override
+  String get login_button => 'Login';
+
+  @override
+  String get login_signup => 'Don\'t have an account? Sign Up';
+
+  @override
+  String get login_error_invalidCredentials => 'Username or password wrong';
+
+  @override
+  String get login_error_userNotFound => 'Username or password wrong';
+
+  @override
+  String get login_error_networkFailure => 'Network error. Please check your connection and try again.';
+
+  @override
+  String get login_error_usernameEmpty => 'Username is required';
+
+  @override
+  String get login_error_passwordEmpty => 'Password is required';
+
+  @override
+  String get login_error_unknown => 'An unexpected error occurred. Please try again.';
 }

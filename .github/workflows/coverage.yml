@@ -15,6 +15,8 @@ jobs:
     name: Flutter Tests & Coverage
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    env:
+      MIN_DIFF_COVERAGE: 90
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,6 +41,9 @@ jobs:
           dart pub global activate pull_request_coverage
           echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
 
+      - name: Install full_coverage (Dart global)
+        run: dart pub global activate full_coverage
+
       - name: Flutter doctor (sanity)
         run: flutter doctor -v
 
@@ -47,7 +52,7 @@ jobs:
 
       - name: Run Tests & Coverage
         id: run_tests
-        run: bash scripts/check-coverage.sh
+        run: bash .specify/scripts/bash/check-coverage.sh
 
       - name: Post-process Diff Coverage
         if: always()
@@ -58,15 +63,24 @@ jobs:
             awk '/MISSING TEST/ {print}' missing_coverage.md > _uncovered.tmp || true
             missing_count=$(wc -l < _uncovered.tmp | tr -d ' ')
             echo "uncovered_lines=$missing_count" >> $GITHUB_OUTPUT
-            # Decide failure: if file exists and has at least 1 uncovered line AND env ENFORCE_DIFF_COVERAGE != 'false'
-            if [[ ${missing_count} -gt 0 && "${ENFORCE_DIFF_COVERAGE:-true}" == "true" ]]; then
-              echo "fail_build=true" >> $GITHUB_OUTPUT
-            else
+            
+            # Check if ✅ (success checkmark) is present in the coverage report
+            if grep -q "✅" missing_coverage.md; then
+              echo "coverage_passed=true" >> $GITHUB_OUTPUT
               echo "fail_build=false" >> $GITHUB_OUTPUT
+            else
+              echo "coverage_passed=false" >> $GITHUB_OUTPUT
+              # Decide failure: if ❌ present AND env ENFORCE_DIFF_COVERAGE != 'false'
+              if [[ "${ENFORCE_DIFF_COVERAGE:-true}" == "true" ]]; then
+                echo "fail_build=true" >> $GITHUB_OUTPUT
+              else
+                echo "fail_build=false" >> $GITHUB_OUTPUT
+              fi
             fi
           else
             # No file means all changed lines covered (script now only emits file when uncovered lines exist)
             echo "uncovered_lines=0" >> $GITHUB_OUTPUT
+            echo "coverage_passed=true" >> $GITHUB_OUTPUT
             echo "fail_build=false" >> $GITHUB_OUTPUT
           fi
 
@@ -83,11 +97,12 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            ${{ steps.diffcov.outputs.uncovered_lines == '0' && '✅' || '❌' }} Diff Coverage Report
+            ${{ steps.diffcov.outputs.coverage_passed == 'true' && '✅' || '❌' }} Diff Coverage Report
             Uncovered changed lines: ${{ steps.diffcov.outputs.uncovered_lines }}
+            Coverage threshold met: ${{ steps.diffcov.outputs.coverage_passed == 'true' && 'Yes' || 'No' }}
 
             Full details (if any): missing-coverage artifact.
-            Enforcement: ${{ steps.diffcov.outputs.fail_build == 'true' && 'Build will fail due to uncovered lines.' || 'Informational only (not failing).'}}
+            Enforcement: ${{ steps.diffcov.outputs.fail_build == 'true' && 'Build will fail due to coverage below threshold.' || 'Informational only (not failing).'}}
           comment_tag: coverage-summary
 
       - name: Fail if uncovered lines present

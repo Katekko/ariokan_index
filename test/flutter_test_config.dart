@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:alchemist/alchemist.dart';
-import 'package:ariokan_index/shared/utils/app_logger.dart';
+import 'package:ariokan_index/core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
