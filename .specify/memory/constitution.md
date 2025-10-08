@@ -90,6 +90,23 @@ All domain logic and validators require unit tests. Golden/widget tests are requ
 - Register all required dependencies in `setUpAll()` exactly once per test file
 - Individual tests should not modify DI registrations
 
+**Page Test Structure:**
+Page tests (`**/*_page_test.dart`) must follow a two-group pattern:
+- **Interfaces Group**: Contains ONLY golden tests that verify visual appearance and layout
+  - Use `testWidgetsGolden()` for all interface tests
+  - Use the `setup` parameter within `testWidgetsGolden()` to configure state/mocks before rendering
+  - Each distinct visual state requires its own golden test
+- **Interactions Group**: Contains behavioral and navigation tests
+  - Use standard `testWidgets()` for interaction tests
+  - Test user interactions, navigation, state listeners, and side effects
+
+**Test App Wrappers:**
+Use helpers from `test/helpers/test_app.dart` to wrap widgets under test:
+- `localizedTestApp(child)`: For simple widget tests requiring localization
+- `localizedTestRouterApp(routes)`: For routing-based tests with GoRouter
+- `mockedRouterApp(child, mockRouter)`: For tests requiring mocked navigation
+- Choose the appropriate wrapper based on test needs; avoid duplicating MaterialApp configuration
+
 ### V. Observability & Logging
 Structured logging is required for all significant user and system actions. The AppLogger utility must be used for all logs. No secrets or sensitive data may be logged. Logs must use stable event identifiers and be sanitized.
 
@@ -108,11 +125,17 @@ All new features follow a spec → tasks → branch workflow. Failing tests must
 
 This constitution supersedes all other practices. Amendments require documentation, approval, and a migration plan. All PRs and reviews must verify compliance with these principles. Versioning follows semantic rules: MAJOR for breaking/removal, MINOR for new/expanded principles, PATCH for clarifications. Compliance reviews are required for all architectural or contract changes.
 
-**Version**: 1.1.2 | **Ratified**: 2025-09-24 | **Last Amended**: 2025-10-07
+**Version**: 1.1.3 | **Ratified**: 2025-09-24 | **Last Amended**: 2025-10-07
 
 ---
 
 ## Changelog
+
+### 1.1.3 (2025-10-07)
+- **PATCH**: Added page test structure guidelines to Test-First & Coverage Discipline
+- Mandated two-group pattern for page tests (Interfaces with golden tests only, Interactions for behavior)
+- Required use of `testWidgetsGolden()` with `setup` parameter for all interface tests
+- Documented test app wrapper patterns from `test/helpers/test_app.dart`
 
 ### 1.1.2 (2025-10-07)
 - **PATCH**: Added test setup patterns to Test-First & Coverage Discipline

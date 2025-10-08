@@ -50,12 +50,6 @@ fi
 step "Running flutter tests with coverage"
 flutter test --coverage
 
-step "Cleaning up full_coverage_test.dart"
-if [ -f "test/full_coverage_test.dart" ]; then
-  rm test/full_coverage_test.dart
-  info "Removed test/full_coverage_test.dart"
-fi
-
 step "Generating pull request diff coverage (origin/${TARGET_BRANCH})"
 if command -v pull_request_coverage >/dev/null 2>&1; then
   # Allow caller to override threshold; default 100 to keep strictness unless relaxed explicitly.
@@ -84,6 +78,12 @@ if command -v pull_request_coverage >/dev/null 2>&1; then
   fi
 else
   error "pull_request_coverage tool not found in PATH. Skipping diff coverage markdown."
+fi
+
+step "Cleaning up full_coverage_test.dart"
+if [ -f "test/full_coverage_test.dart" ]; then
+  rm test/full_coverage_test.dart
+  info "Removed test/full_coverage_test.dart"
 fi
 
 success "Done."
